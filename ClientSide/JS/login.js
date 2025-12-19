@@ -6,30 +6,39 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     password: e.target.password.value.trim(),
   };
 
-  // OPTION 1: Fake API 
- 
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginData),
-    });
 
-    const result = await response.json();
-    console.log("Fake API login response:", result);
-    // This alert is just to show the request went out
-    alert("Login request sent to Fake API (not really checked).");
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Could not connect to Fake API.");
-  }
+  // OPTION 1 reqeust and response
+  
+  // try {
+  //   const response = await fetch("http://localhost:8080/api/auth/login", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(loginData),
+  //   });
 
+  //   if (!response.ok) throw new Error("Backend login failed");
 
+  //   const data = await response.json();
+
+  //   // Save tokens + metadata from backend response
+  //   localStorage.setItem("accessToken", data.accessToken);
+  //   localStorage.setItem("refreshToken", data.refreshToken);
+  //   localStorage.setItem("username", data.username);
+  //   localStorage.setItem("role", data.role);
+
+  //   alert("Login successful via backend! Welcome " + data.username);
+  //   window.location.href = "customerdashboard.html";
+  //   return; // stop here if backend worked
+  // } catch (error) {
+  //   console.warn("Backend not available, falling back to LocalStorage:", error);
+  // }
+
+  
+  // OPTION 2: LocalStorage 
 
   const savedUser = JSON.parse(localStorage.getItem("signupData"));
-
   if (!savedUser) {
-    alert("No account found in browser. Please sign up first.");
+    alert("No account found locally. Please sign up first.");
     return;
   }
 
@@ -37,13 +46,11 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     loginData.username === savedUser.username &&
     loginData.password === savedUser.password
   ) {
-    alert("Login successful! Welcome " + savedUser.username);
-
-
-    console.log("User info from LocalStorage:", savedUser);
-window.location.href = "customerdashboard.html";
-
+    localStorage.setItem("currentUser", JSON.stringify(savedUser));
+    alert("Login successful (LocalStorage)! Welcome " + savedUser.username);
+    window.location.href = "customerdashboard.html";
   } else {
     alert("Invalid username or password (LocalStorage check).");
   }
 });
+/////will handle login either customer or admin

@@ -4,12 +4,14 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
   const formData = {
     username: e.target.username.value.trim(),
     password: e.target.password.value.trim(),
+    firstName: e.target.firstName.value.trim(),
+    lastName: e.target.lastName.value.trim(),
     email: e.target.email.value.trim(),
+    phoneNumber: e.target.phone.value.trim(),
+    shippingAddress: e.target.address.value.trim()
   };
 
-  // -------------------------------
-  // Regex validation
-  // -------------------------------
+
   const usernameRegex = /^[a-zA-Z0-9]{3,15}$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,40 +20,43 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
     alert("Username must be 3–15 letters/numbers only.");
     return;
   }
-
   if (!passwordRegex.test(formData.password)) {
     alert("Password must be at least 8 chars, with letters and numbers.");
     return;
   }
-
   if (!emailRegex.test(formData.email)) {
     alert("Please enter a valid email address.");
     return;
   }
 
- 
-  // Fake API (practice only)
- 
+
+  // API BLOCK 
+-
   /*
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+    const response = await fetch("http://localhost:8080/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
 
+    if (!response.ok) throw new Error("Backend signup failed");
+
     const result = await response.json();
-    console.log("Fake API signup response:", result);
-    alert("Signup request sent to Fake API (not really saved).");
+    console.log("Backend signup response:", result);
+
+    alert("Signup successful via backend! Please log in.");
+    window.location.href = "login.html";
+    return; // stop here if backend worked
   } catch (error) {
-    console.error("Error:", error);
-    alert("Could not connect to Fake API.");
+    console.warn("Backend not available, falling back to LocalStorage:", error);
   }
   */
 
-  // LocalStorage 
 
+  // LocalStorage 
+ 
   localStorage.setItem("signupData", JSON.stringify(formData));
   console.log("Saved locally:", formData);
-  alert("Signup successful! Data saved in browser.");
+  alert("Signup successful (saved in browser). Now you can log in!");
 });

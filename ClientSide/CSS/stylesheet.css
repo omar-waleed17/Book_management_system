@@ -1,4 +1,4 @@
-/* Reset + global styles */
+
 * {
   margin: 0;
   padding: 0;
@@ -15,7 +15,37 @@ html, body {
   overflow: hidden;
 }
 
-/* Shared container + box */
+
+.btn {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-login {
+  background: #2a5298;
+  color: #fff;
+}
+
+.btn-login:hover {
+  background: #1e3c72;
+  transform: scale(1.05);
+}
+
+.btn-signup {
+  background: #4CAF50;
+  color: #fff;
+}
+
+.btn-signup:hover {
+  background: #388E3C;
+  transform: scale(1.05);
+}
+
 .container {
   height: 100vh;
   display: flex;
