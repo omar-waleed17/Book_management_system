@@ -39,10 +39,10 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
   ) {
     alert("Login successful! Welcome " + savedUser.username);
 
-    // Example: show personal info or cart
+
     console.log("User info from LocalStorage:", savedUser);
-    // You could redirect to a cart page here:
-    // window.location.href = "cart.html";
+window.location.href = "customerdashboard.html";
+
   } else {
     alert("Invalid username or password (LocalStorage check).");
   }
