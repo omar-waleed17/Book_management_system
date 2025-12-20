@@ -13,8 +13,7 @@ import AlexUni.BookStore.BookService.service.BookService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -85,20 +84,6 @@ public class BookController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-    // @PostMapping("path")
-    // public String postNewBook(@RequestBody String entity) {
-    //     //TODO: process POST request
-        
-    //     return entity;
-    // }
-
-    // @PostMapping("path")
-    // public String UpdateExistingBook(@RequestBody String entity) {
-    //     //TODO: process POST request
-        
-    //     return entity;
-    // }
     
     
 }

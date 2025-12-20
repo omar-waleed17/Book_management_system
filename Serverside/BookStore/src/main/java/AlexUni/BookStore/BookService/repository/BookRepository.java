@@ -26,17 +26,17 @@ public class BookRepository {
             book.setIsbn(rs.getString("isbn"));
             book.setTitle(rs.getString("title"));
             book.setCategory(rs.getString("category"));
-            book.setSelling_price(rs.getDouble("selling_price"));
-            book.setQuantity(rs.getInt("quantity"));
+            book.setSellingPrice(rs.getDouble("selling_price"));
+            book.setQuantityInStock(rs.getInt("quantity"));
             book.setThreshold(rs.getInt("threshold"));
-            book.setPublication_year(rs.getInt("publication_year"));
-            book.setPub_id(rs.getInt("pub_id"));
+            book.setPublicationYear(rs.getInt("publication_year"));
+            book.setPublisherId(rs.getInt("pub_id"));
             return book;
         }
     };
     
     public Optional<Book> findByIsbn(String isbn) { // when returning we wrap the object in a Optional object and unrap at service
-        String sqlString = "SELECT * FROM books WHERE isbn = ?";
+        String sqlString = "SELECT * FROM book WHERE isbn = ?";
         try {
             Book book = jdbcTemplate.queryForObject(sqlString, bookRowMapper, isbn);
             return Optional.ofNullable(book); // service must handle unwrapping
@@ -77,18 +77,18 @@ public class BookRepository {
         String sqlString = "INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold, quantity, pub_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sqlString, 
             book.getIsbn(), book.getTitle(), 
-            book.getPublication_year(), book.getSelling_price(), 
+            book.getPublicationYear(), book.getSellingPrice(), 
             book.getCategory(), book.getThreshold(), 
-            book.getQuantity(), book.getPub_id());
+            book.getQuantityInStock(), book.getPublisherId());
     }
 
     public int modifyBook(Book book) {
         String sqlString = "UPDATE book SET title = ?, publication_year = ?, selling_price = ?, category = ?, threshold = ?, quantity = ?, pub_id = ? WHERE isbn = ?";
         return jdbcTemplate.update(sqlString, 
             book.getTitle(), 
-            book.getPublication_year(), book.getSelling_price(), 
+            book.getPublicationYear(), book.getSellingPrice(), 
             book.getCategory(), book.getThreshold(), 
-            book.getQuantity(), book.getPub_id(), book.getIsbn());
+            book.getQuantityInStock(), book.getPublisherId(), book.getIsbn());
     }
     
 }

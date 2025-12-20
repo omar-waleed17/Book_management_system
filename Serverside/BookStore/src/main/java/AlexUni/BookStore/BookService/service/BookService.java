@@ -40,18 +40,18 @@ public class BookService {
     public List<Book> loadBookByPublisher(String publisher) {
         return bookRepository.findByPublisher(publisher);
     }
-
+// admin role methods
     public Book createBook(Book book) {
-        int rows = bookRepository.saveBook(book);
-        if (rows > 0) {
+        int rowsAffected = bookRepository.saveBook(book);
+        if (rowsAffected > 0) {
             return book; // Return the saved book
         }
         throw new RuntimeException("Failed to insert book");
     }
     
     public Book updateBook(Book book) {
-        int rows = bookRepository.modifyBook(book);
-        if (rows == 0) {
+        int rowsAffected = bookRepository.modifyBook(book);
+        if (rowsAffected == 0) {
             throw new BookNotFoundException("Cannot update. Book not found: " + book.getIsbn());
         }
         return book;

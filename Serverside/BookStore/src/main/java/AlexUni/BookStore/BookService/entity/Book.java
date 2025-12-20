@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 public class Book {
     private String isbn;
     private String title;
-    private Integer publication_year;
-    private Double selling_price;
+    private Integer publicationYear;
+    private Double sellingPrice;
     private String category;
     private Integer threshold;
-    private Integer quantity;
-    private Integer pub_id;
+    private Integer quantityInStock;
+    private Integer publisherId;
 }
