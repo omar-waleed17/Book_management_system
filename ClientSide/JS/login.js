@@ -1,3 +1,25 @@
+// Restore form data from sessionStorage on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const savedFormData = sessionStorage.getItem('loginFormData');
+  if (savedFormData) {
+    const formData = JSON.parse(savedFormData);
+    const form = document.querySelector('.login-form');
+    
+    if (formData.username) form.username.value = formData.username;
+    if (formData.password) form.password.value = formData.password;
+  }
+});
+
+// Save form data to sessionStorage as user types
+document.querySelector('.login-form').addEventListener('input', (e) => {
+  const form = e.currentTarget;
+  const formData = {
+    username: form.username.value,
+    password: form.password.value
+  };
+  sessionStorage.setItem('loginFormData', JSON.stringify(formData));
+});
+
 // Toggle password visibility
 document.querySelector(".show-password-btn").addEventListener("click", function() {
   const passwordInput = document.querySelector('input[name="password"]');
@@ -56,6 +78,10 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     loginData.password === savedUser.password
   ) {
     localStorage.setItem("currentUser", JSON.stringify(savedUser));
+    
+    // Clear sessionStorage after successful login
+    sessionStorage.removeItem('loginFormData');
+    
     alert("Login successful (LocalStorage)! Welcome " + savedUser.username);
     window.location.href = "customerdashboard.html";
   } else {
