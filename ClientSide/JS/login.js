@@ -1,3 +1,12 @@
+// Toggle password visibility
+document.querySelector(".show-password-btn").addEventListener("click", function() {
+  const passwordInput = document.querySelector('input[name="password"]');
+  const isPassword = passwordInput.type === "password";
+  
+  passwordInput.type = isPassword ? "text" : "password";
+  this.classList.toggle("active");
+});
+
 document.querySelector(".login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
