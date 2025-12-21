@@ -25,7 +25,7 @@ public class BookController {
     private BookService bookService;
     // TODO create dto later
 
-    @GetMapping("")
+    @GetMapping("") // old
     public ResponseEntity<?> getBooks() { 
         try {
             List<Book> books = bookService.loadAllBooks();
@@ -35,7 +35,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search") // this does everything except search by isbn
     public ResponseEntity<?> getBooksByAdvancedSearch(
         @RequestParam(defaultValue = "") String title,
         @RequestParam(defaultValue = "") String category,
@@ -50,7 +50,7 @@ public class BookController {
         }
     }
     
-    @GetMapping("/{isbn}")
+    @GetMapping("search/{isbn}") // old was /{isbn}
     public ResponseEntity<?> getBooksByIsbn(@PathVariable String isbn) {
         try {
             Book book = bookService.loadBookByISBN(isbn);
@@ -60,7 +60,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/title")
+    @GetMapping("/search/title") // old
     public ResponseEntity<?> getBooksByTitle(@RequestParam String title) {
         try {
             List<Book> books = bookService.loadBookByTitle(title);
@@ -70,7 +70,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/category")
+    @GetMapping("/search/category") // old
     public ResponseEntity<?> getBooksByCategory(@RequestParam String category) {
         try {
             List<Book> books = bookService.loadBookByCategory(category);
@@ -80,7 +80,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/author")
+    @GetMapping("/search/author") // old
     public ResponseEntity<?> getBooksByAuthor(@RequestParam String author) {
         try {
             List<Book> books = bookService.loadBookByAuthor(author);
@@ -90,7 +90,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/publisher")
+    @GetMapping("/search/publisher") // old
     public ResponseEntity<?> getBooksByPublisher(@RequestParam String publisher) {
         try {
             List<Book> books = bookService.loadBookByPublisher(publisher);
