@@ -40,6 +40,10 @@ public class BookService {
     public List<Book> loadBookByPublisher(String publisher) {
         return bookRepository.findByPublisher(publisher);
     }
+    
+    public List<Book> loadBooksByAdvancedSearch(String title, String category, String author, String publisher) {
+        return bookRepository.findByAdvancedSearch(title, category, author, publisher);
+    }
 // admin role methods
     public Book createBook(Book book) {
         int rowsAffected = bookRepository.saveBook(book);
@@ -56,5 +60,6 @@ public class BookService {
         }
         return book;
     }
+
     
 }

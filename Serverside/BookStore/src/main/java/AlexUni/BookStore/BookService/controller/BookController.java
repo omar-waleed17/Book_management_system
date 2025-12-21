@@ -34,6 +34,21 @@ public class BookController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> getBooksByAdvancedSearch(
+        @RequestParam(defaultValue = "") String title,
+        @RequestParam(defaultValue = "") String category,
+        @RequestParam(defaultValue = "") String author,
+        @RequestParam(defaultValue = "") String publisher
+        ) { 
+        try {
+            List<Book> books = bookService.loadBooksByAdvancedSearch(title, category, author, publisher);
+            return ResponseEntity.ok(books);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     
     @GetMapping("/{isbn}")
     public ResponseEntity<?> getBooksByIsbn(@PathVariable String isbn) {

@@ -73,6 +73,16 @@ public class BookRepository {
         String searchPattern = "%" + publisherName + "%";
         return jdbcTemplate.query(sqlString, bookRowMapper, searchPattern);
     }
+    
+    public List<Book> findByAdvancedSearch(String title, String category, String author, String publisher) { // right now it reutns author data as well but that is not pared into the json
+        String sqlString = "SELECT b.*, a.* FROM book AS b NATURAL JOIN publisher AS p NATURAL JOIN authored_by AS ab NATURAL JOIN author AS a " +
+                            "WHERE p.pub_name LIKE ? AND (a.fname LIKE ? OR a.lname LIKE ?) AND b.title LIKE ? AND b.category LIKE ?";
+        String searchPatternPublisher = "%" + publisher + "%";
+        String searchPatternAuthor = "%" + author + "%";
+        String searchPatternTitle = "%" + title + "%";
+        String searchPatternCategory = "%" + category + "%";
+        return jdbcTemplate.query(sqlString, bookRowMapper, searchPatternPublisher, searchPatternAuthor, searchPatternAuthor, searchPatternTitle, searchPatternCategory);
+    }
 
     public int saveBook(Book book) {
         String sqlString = "INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold, quantity, pub_id, img_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -91,5 +101,6 @@ public class BookRepository {
             book.getCategory(), book.getThreshold(), 
             book.getQuantityInStock(), book.getPublisherId(), book.getImgPath(), book.getIsbn());
     }
+
     
 }
