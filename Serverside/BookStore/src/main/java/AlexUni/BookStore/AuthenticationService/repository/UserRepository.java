@@ -22,11 +22,11 @@ public class UserRepository {
           User user = new User();
           user.setUserId(rs.getInt("user_id"));
           user.setUsername(rs.getString("username"));
-          user.setPassword(rs.getString("password"));
-          user.setFirstName(rs.getString("first_name"));
-          user.setLastName(rs.getString("last_name"));
+          user.setPassword(rs.getString("hashed_password"));
+          user.setFirstName(rs.getString("fname"));
+          user.setLastName(rs.getString("lname"));
           user.setEmail(rs.getString("email"));
-          user.setPhoneNumber(rs.getString("phone_number"));
+          user.setPhoneNumber(rs.getString("phone_num"));
           user.setShippingAddress(rs.getString("shipping_address"));
           user.setRole(rs.getString("role"));
           return user;
@@ -77,8 +77,8 @@ public class UserRepository {
 
   public int save(User user) {
     String sql =
-        "INSERT INTO users (username, password, first_name, last_name, email, "
-            + "phone_number, shipping_address, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO users(username, hashed_password, fname, lname, email, "
+            + "phone_num, shipping_address, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     return jdbcTemplate.update(
         sql,
         user.getUsername(),
