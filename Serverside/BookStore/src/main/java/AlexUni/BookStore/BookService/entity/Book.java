@@ -18,4 +18,5 @@ public class Book {
     private Integer threshold;
     private Integer quantityInStock;
     private Integer publisherId;
+    private String imgPath;
 }

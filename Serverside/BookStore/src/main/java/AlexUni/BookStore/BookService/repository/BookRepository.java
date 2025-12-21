@@ -31,6 +31,7 @@ public class BookRepository {
             book.setThreshold(rs.getInt("threshold"));
             book.setPublicationYear(rs.getInt("publication_year"));
             book.setPublisherId(rs.getInt("pub_id"));
+            book.setImgPath(rs.getString("img_path"));
             return book;
         }
     };
@@ -74,7 +75,7 @@ public class BookRepository {
     }
 
     public int saveBook(Book book) {
-        String sqlString = "INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold, quantity, pub_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlString = "INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold, quantity, pub_id, img_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sqlString, 
             book.getIsbn(), book.getTitle(), 
             book.getPublicationYear(), book.getSellingPrice(), 
@@ -83,12 +84,12 @@ public class BookRepository {
     }
 
     public int modifyBook(Book book) {
-        String sqlString = "UPDATE book SET title = ?, publication_year = ?, selling_price = ?, category = ?, threshold = ?, quantity = ?, pub_id = ? WHERE isbn = ?";
+        String sqlString = "UPDATE book SET title = ?, publication_year = ?, selling_price = ?, category = ?, threshold = ?, quantity = ?, pub_id = ?, img_path = ? WHERE isbn = ?";
         return jdbcTemplate.update(sqlString, 
             book.getTitle(), 
             book.getPublicationYear(), book.getSellingPrice(), 
             book.getCategory(), book.getThreshold(), 
-            book.getQuantityInStock(), book.getPublisherId(), book.getIsbn());
+            book.getQuantityInStock(), book.getPublisherId(), book.getImgPath(), book.getIsbn());
     }
     
 }
