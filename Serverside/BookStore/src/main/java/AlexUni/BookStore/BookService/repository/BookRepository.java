@@ -37,7 +37,7 @@ public class BookRepository {
             return book;
         }
     };
-    
+    // old
     public Optional<Book> findByIsbn(String isbn) { // when returning we wrap the object in a Optional object and unrap at service
         String sqlString = "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list " +
                         "FROM book b " +
@@ -80,20 +80,21 @@ public class BookRepository {
         String searchPattern = "%" + publisherName + "%";
         return jdbcTemplate.query(sqlString, bookRowMapper, searchPattern);
     }
-    
-    public List<Book> findByAdvancedSearch(String title, String category, String author, String publisher) { // this does everything
+    // only this matters
+    public List<Book> findByAdvancedSearch(String isbn, String title, String category, String author, String publisher) { // this does everything
         String sqlString = "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list " +
                         "FROM book b NATURAL JOIN publisher p NATURAL JOIN authored_by ab " +
                         "NATURAL JOIN author a WHERE b.isbn IN " +
                         "(SELECT ab2.isbn FROM book b2 NATURAL JOIN publisher p2 NATURAL JOIN authored_by ab2 NATURAL JOIN author a2 " +
                         "WHERE p2.pub_name LIKE ? AND (a2.fname LIKE ? OR a2.lname LIKE ?) " + 
-                        "AND b2.title LIKE ? AND b2.category LIKE ?) " +
+                        "AND b2.title LIKE ? AND b2.category LIKE ? AND b2.isbn LIKE ?) " +
                         "GROUP BY b.isbn";
         String searchPatternPublisher = "%" + publisher + "%";
         String searchPatternAuthor = "%" + author + "%";
         String searchPatternTitle = "%" + title + "%";
         String searchPatternCategory = "%" + category + "%";
-        return jdbcTemplate.query(sqlString, bookRowMapper, searchPatternPublisher, searchPatternAuthor, searchPatternAuthor, searchPatternTitle, searchPatternCategory);
+        String searchPatternIsbn = "%" + isbn + "%";
+        return jdbcTemplate.query(sqlString, bookRowMapper, searchPatternPublisher, searchPatternAuthor, searchPatternAuthor, searchPatternTitle, searchPatternCategory, searchPatternIsbn);
     }
 
     public int saveBook(Book book) {

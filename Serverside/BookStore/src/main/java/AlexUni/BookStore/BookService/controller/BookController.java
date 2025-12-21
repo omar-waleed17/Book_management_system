@@ -35,22 +35,23 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search") // this does everything except search by isbn
+    @GetMapping("/search") // this does everything 
     public ResponseEntity<?> getBooksByAdvancedSearch(
+        @RequestParam(defaultValue = "") String isbn,
         @RequestParam(defaultValue = "") String title,
         @RequestParam(defaultValue = "") String category,
         @RequestParam(defaultValue = "") String author,
         @RequestParam(defaultValue = "") String publisher
         ) { 
         try {
-            List<Book> books = bookService.loadBooksByAdvancedSearch(title, category, author, publisher);
+            List<Book> books = bookService.loadBooksByAdvancedSearch(isbn, title, category, author, publisher);
             return ResponseEntity.ok(books);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     
-    @GetMapping("/{isbn}")
+    @GetMapping("/{isbn}") // old
     public ResponseEntity<?> getBooksByIsbn(@PathVariable String isbn) {
         try {
             Book book = bookService.loadBookByISBN(isbn);

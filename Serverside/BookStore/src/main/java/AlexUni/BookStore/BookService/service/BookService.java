@@ -14,8 +14,8 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
     
-    public List<Book> loadBooksByAdvancedSearch(String title, String category, String author, String publisher) {
-        return bookRepository.findByAdvancedSearch(title, category, author, publisher);
+    public List<Book> loadBooksByAdvancedSearch(String isbn, String title, String category, String author, String publisher) {
+        return bookRepository.findByAdvancedSearch(isbn, title, category, author, publisher);
     }
     
     public Book loadBookByISBN(String isbn) {
