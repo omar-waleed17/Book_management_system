@@ -13,16 +13,20 @@ import AlexUni.BookStore.BookService.repository.BookRepository;
 public class BookService {
     @Autowired
     private BookRepository bookRepository;
-
+    
+    public List<Book> loadBooksByAdvancedSearch(String title, String category, String author, String publisher) {
+        return bookRepository.findByAdvancedSearch(title, category, author, publisher);
+    }
+    
+    public Book loadBookByISBN(String isbn) {
+        Book book = bookRepository.findByIsbn(isbn)
+        .orElseThrow(() -> new BookNotFoundException("Book with ISBN " + isbn + " not found!"));
+        return book;
+    }
+    
     public List<Book> loadAllBooks() {
         List<Book> books = bookRepository.findAllBooks();
         return books;
-    }
-
-    public Book loadBookByISBN(String isbn) {
-        Book book = bookRepository.findByIsbn(isbn)
-            .orElseThrow(() -> new BookNotFoundException("Book with ISBN " + isbn + " not found!"));
-        return book;
     }
 
     public List<Book> loadBookByTitle(String title) {
@@ -41,9 +45,6 @@ public class BookService {
         return bookRepository.findByPublisher(publisher);
     }
     
-    public List<Book> loadBooksByAdvancedSearch(String title, String category, String author, String publisher) {
-        return bookRepository.findByAdvancedSearch(title, category, author, publisher);
-    }
 // admin role methods
     public Book createBook(Book book) {
         int rowsAffected = bookRepository.saveBook(book);
