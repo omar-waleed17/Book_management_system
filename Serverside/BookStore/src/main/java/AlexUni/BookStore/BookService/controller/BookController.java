@@ -25,10 +25,25 @@ public class BookController {
     private BookService bookService;
     // TODO create dto later
 
-    @GetMapping("")
+    @GetMapping("") // old
     public ResponseEntity<?> getBooks() { 
         try {
             List<Book> books = bookService.loadAllBooks();
+            return ResponseEntity.ok(books);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/search") // this does everything except search by isbn
+    public ResponseEntity<?> getBooksByAdvancedSearch(
+        @RequestParam(defaultValue = "") String title,
+        @RequestParam(defaultValue = "") String category,
+        @RequestParam(defaultValue = "") String author,
+        @RequestParam(defaultValue = "") String publisher
+        ) { 
+        try {
+            List<Book> books = bookService.loadBooksByAdvancedSearch(title, category, author, publisher);
             return ResponseEntity.ok(books);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -45,7 +60,9 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/title")
+//_________________________________________________________________________________________________
+
+    @GetMapping("/search/title") // old
     public ResponseEntity<?> getBooksByTitle(@RequestParam String title) {
         try {
             List<Book> books = bookService.loadBookByTitle(title);
@@ -55,7 +72,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/category")
+    @GetMapping("/search/category") // old
     public ResponseEntity<?> getBooksByCategory(@RequestParam String category) {
         try {
             List<Book> books = bookService.loadBookByCategory(category);
@@ -65,7 +82,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/author")
+    @GetMapping("/search/author") // old
     public ResponseEntity<?> getBooksByAuthor(@RequestParam String author) {
         try {
             List<Book> books = bookService.loadBookByAuthor(author);
@@ -75,7 +92,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/search/publisher")
+    @GetMapping("/search/publisher") // old
     public ResponseEntity<?> getBooksByPublisher(@RequestParam String publisher) {
         try {
             List<Book> books = bookService.loadBookByPublisher(publisher);

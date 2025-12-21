@@ -24,6 +24,7 @@ CREATE TABLE book (
   threshold INT DEFAULT 10,
   quantity INT DEFAULT 0,
   pub_id INT,
+  img_path VARCHAR(250),
   CONSTRAINT fk_book_publisher FOREIGN KEY (pub_id) REFERENCES publisher (pub_id),
   CONSTRAINT check_category CHECK (
     category IN (
