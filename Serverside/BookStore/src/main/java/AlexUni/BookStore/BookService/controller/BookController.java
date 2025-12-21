@@ -50,7 +50,7 @@ public class BookController {
         }
     }
     
-    @GetMapping("search/{isbn}") // old was /{isbn}
+    @GetMapping("/{isbn}")
     public ResponseEntity<?> getBooksByIsbn(@PathVariable String isbn) {
         try {
             Book book = bookService.loadBookByISBN(isbn);
