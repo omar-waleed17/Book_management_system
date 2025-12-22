@@ -30,8 +30,13 @@ public class ShoppingCartService {
         return rowsAffected;
     }
 
-    public int deleteCart(String username) {
-        int rowsAffected = shoppingCartRepository.deleteCartByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    public int deleteCart(String userName) {
+        int rowsAffected = shoppingCartRepository.deleteCartByUsername(userName).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
+        return rowsAffected;
+    }
+
+    public int updateItemInCart(String userName, String isbn, int quantity) {
+        int rowsAffected = cartDetailsRepository.updateItemToCart(userName, isbn, quantity).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
         return rowsAffected;
     }
 }

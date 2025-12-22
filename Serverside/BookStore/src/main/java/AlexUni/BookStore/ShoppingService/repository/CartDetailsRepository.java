@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
+import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 
 @Repository
 public class CartDetailsRepository {
@@ -41,5 +42,16 @@ public class CartDetailsRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }      
+    }
+
+    public Optional<Integer> updateItemToCart(String userName, String isbn, int quantity) {
+        String sqlString = "UPDATE cart_details cd NATURAL JOIN shopping_cart sc NATURAL JOIN users u " +
+                           "SET cd.quantity = ? WHERE u.username = ? AND cd.isbn = ?";
+        try {
+            int rowsAffected = jdbcTemplate.update(sqlString, quantity, userName, isbn);
+            return Optional.of(rowsAffected);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } 
     }
 }
