@@ -60,7 +60,7 @@ public class ShoppingCartRepository {
         } catch (EmptyResultDataAccessException e) {
              return Optional.empty(); // service must handle unwrapping
         }
-
-
     }
+
+    
 }

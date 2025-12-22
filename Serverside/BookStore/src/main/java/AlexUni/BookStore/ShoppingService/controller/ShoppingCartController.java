@@ -13,6 +13,9 @@ import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 import AlexUni.BookStore.ShoppingService.service.ShoppingCartService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -21,8 +24,7 @@ public class ShoppingCartController {
     
     @Autowired
     private ShoppingCartService shoppingCartService;
-    @Autowired
-
+    
     @GetMapping("/cart")
     public ResponseEntity<?> getCart() { 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -37,5 +39,21 @@ public class ShoppingCartController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/cart")
+    public ResponseEntity<?> addToCart(@RequestParam String isbn, @RequestParam int quantity) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        String username = authentication.getName();
+        try {
+            int rowsAffected = shoppingCartService.saveItemToCart(username, isbn, quantity); // userId obtained from acess token
+            return ResponseEntity.ok(rowsAffected);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
     
 }
