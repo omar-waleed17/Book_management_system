@@ -61,6 +61,18 @@ public class ShoppingCartController {
         }
     }
 
+    @DeleteMapping("/cart/item")
+    public ResponseEntity<?> deleteItemFromCart(@RequestParam String isbn) {
+        String userName = authenticateUserGetName();
+        if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        try {
+            int rowsAffected = shoppingCartService.deleteItemFromCart(userName, isbn); // userId obtained from acess token
+            return ResponseEntity.ok(rowsAffected);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/cart/item")
     public ResponseEntity<?> modifyItemInCart(@RequestParam String isbn, @RequestParam int quantity) {
         String userName = authenticateUserGetName();

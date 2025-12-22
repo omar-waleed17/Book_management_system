@@ -39,4 +39,9 @@ public class ShoppingCartService {
         int rowsAffected = cartDetailsRepository.updateItemToCart(userName, isbn, quantity).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
         return rowsAffected;
     }
+
+    public int deleteItemFromCart(String userName, String isbn) {
+        int rowsAffected = cartDetailsRepository.deleteItemFromCart(userName, isbn).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
+        return rowsAffected;
+    }
 }

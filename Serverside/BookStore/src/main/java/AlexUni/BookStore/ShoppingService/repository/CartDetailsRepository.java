@@ -54,4 +54,15 @@ public class CartDetailsRepository {
             return Optional.empty();
         } 
     }
+
+    public Optional<Integer> deleteItemFromCart(String userName, String isbn) {
+        String sqlString = "DELETE cd FROM cart_details cd NATURAL JOIN shopping_cart sc NATURAL JOIN users u " +
+                           "WHERE u.username = ? AND cd.isbn = ?";
+        try {
+            int rowsAffected = jdbcTemplate.update(sqlString, userName, isbn);
+            return Optional.of(rowsAffected);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
