@@ -30,15 +30,11 @@ public class CartDetailsRepository {
         }
     };
 
-    public List<CartDetails> findAllCartDetails(int cart_id) {
-        String sqlString = "SELECT * FROM cart_details WHERE cart_id = ?";
-        return jdbcTemplate.query(sqlString, cartDetailsRowMapper);
-    }
-
     public Optional<Integer> addItemToCart(String userName, String isbn, int quantity) {
         String sqlString = "INSERT INTO cart_details (cart_id, isbn, quantity) " + //
                         "SELECT sc.cart_id, ? , ? FROM shopping_cart sc NATURAL JOIN users u " +
-                        "WHERE u.username = ?";
+                        "WHERE u.username = ? ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
+                         // if entry already exists add onto it
         try {
             int rowsAffected = jdbcTemplate.update(sqlString, isbn, quantity, userName);
             return Optional.of(rowsAffected);

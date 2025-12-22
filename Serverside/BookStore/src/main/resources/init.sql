@@ -76,7 +76,7 @@ CREATE TABLE cart_details (
   isbn VARCHAR(20),
   quantity INT DEFAULT 1,
   PRIMARY KEY (cart_id, isbn),
-  CONSTRAINT fk_cd_cart FOREIGN KEY (cart_id) REFERENCES shopping_cart (cart_id),
+  CONSTRAINT fk_cd_cart FOREIGN KEY (cart_id) REFERENCES shopping_cart (cart_id) ON DELETE CASCADE,
   CONSTRAINT fk_cd_book FOREIGN KEY (isbn) REFERENCES book (isbn)
 );
 

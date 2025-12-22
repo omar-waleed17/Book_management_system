@@ -62,5 +62,25 @@ public class ShoppingCartRepository {
         }
     }
 
+    public Optional<Integer> createCartForUser(String userName) {
+        String sqlString = "REPLACE INTO shopping_cart (user_id) SELECT u.user_id FROM users u WHERE u.username=?"; // replace if exists
+        try {
+            int rowsAffected = jdbcTemplate.update(sqlString, userName);
+            return Optional.of(rowsAffected);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }      
+    }
+
+    public Optional<Integer> deleteCartByUsername(String username) {
+        String sqlString = "DELETE FROM shopping_cart WHERE user_id = (SELECT user_id FROM users WHERE username = ?)";
+        try {
+            int rowsAffected = jdbcTemplate.update(sqlString, username);
+            return Optional.of(rowsAffected);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     
 }

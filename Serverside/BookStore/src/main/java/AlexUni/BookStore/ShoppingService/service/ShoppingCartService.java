@@ -20,8 +20,18 @@ public class ShoppingCartService {
         return shoppingCart;
     }
 
+    public int saveCartForUser(String userName) {
+        int rowsAffected = shoppingCartRepository.createCartForUser(userName).orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userName));
+        return rowsAffected;
+    }
+
     public int saveItemToCart(String userName, String isbn, int quantity) {
         int rowsAffected = cartDetailsRepository.addItemToCart(userName, isbn, quantity).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
+        return rowsAffected;
+    }
+
+    public int deleteCart(String username) {
+        int rowsAffected = shoppingCartRepository.deleteCartByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         return rowsAffected;
     }
 }

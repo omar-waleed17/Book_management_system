@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 import AlexUni.BookStore.ShoppingService.service.ShoppingCartService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -36,12 +39,12 @@ public class ShoppingCartController {
             ShoppingCart shoppingCart = shoppingCartService.loadAllCartContent(username); // userId obtained from acess token
             return ResponseEntity.ok(shoppingCart);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    @PostMapping("/cart")
-    public ResponseEntity<?> addToCart(@RequestParam String isbn, @RequestParam int quantity) {
+    @PostMapping("/cart/item")
+    public ResponseEntity<?> addItemToCart(@RequestParam String isbn, @RequestParam int quantity) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
@@ -53,6 +56,36 @@ public class ShoppingCartController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/cart")
+    public ResponseEntity<?> createNewCart() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        String username = authentication.getName();
+        try {
+            int rowsAffected = shoppingCartService.saveCartForUser(username); // userId obtained from acess token
+            return ResponseEntity.ok(rowsAffected);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/cart")
+    public ResponseEntity<?> deleteCart() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        String username = authentication.getName();
+        try {
+            int rowsAffected = shoppingCartService.deleteCart(username);
+            return ResponseEntity.ok(rowsAffected);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }    
     }
     
     
