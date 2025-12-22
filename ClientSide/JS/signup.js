@@ -48,8 +48,7 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
 
 
   // API BLOCK 
--
-  /*
+
   try {
     const response = await fetch("http://localhost:8080/api/auth/signup", {
       method: "POST",
@@ -62,53 +61,85 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
     const result = await response.json();
     console.log("Backend signup response:", result);
 
-    alert("Signup successful via backend! Please log in.");
-    window.location.href = "login.html";
-    return; // stop here if backend worked
+    // Auto-login after successful signup
+    try {
+      const loginResponse = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password
+        }),
+      });
+
+      if (loginResponse.ok) {
+        const loginData = await loginResponse.json();
+        
+        // Save tokens + metadata from backend response
+        localStorage.setItem("accessToken", loginData.accessToken);
+        localStorage.setItem("refreshToken", loginData.refreshToken);
+        localStorage.setItem("username", loginData.username);
+        localStorage.setItem("role", loginData.role);
+        localStorage.setItem("isLoggedIn", "true");
+
+        alert("Account created successfully! Welcome " + loginData.username);
+        window.location.href = "customerdashboard.html";
+        return;
+      }
+    } catch (loginError) {
+      console.warn("Auto-login failed:", loginError);
+      alert("Signup successful! Please log in.");
+      window.location.href = "login.html";
+      return;
+    }
   } catch (error) {
     console.warn("Backend not available, falling back to LocalStorage:", error);
   }
-  */
-
-
-  // LocalStorage 
+  
+  // LocalStorage fallback - also auto-login
   localStorage.setItem("signupData", JSON.stringify(formData));
+  localStorage.setItem("currentUser", JSON.stringify(formData));
+  localStorage.setItem("isLoggedIn", "true");
   console.log("Saved locally:", formData);
   
   // Clear sessionStorage after successful signup
   sessionStorage.removeItem('signupFormData');
   
-  alert("Signup successful (saved in browser). Now you can log in!");
+  alert("Account created successfully! Welcome " + formData.username);
+  window.location.href = "customerdashboard.html";
 });
 
 // Restore form data from sessionStorage on page load
-window.addEventListener('DOMContentLoaded', () => {
-  const savedFormData = sessionStorage.getItem('signupFormData');
-  if (savedFormData) {
-    const formData = JSON.parse(savedFormData);
-    const form = document.querySelector('.signup-form');
+// window.addEventListener('DOMContentLoaded', () => {
+//   const savedFormData = sessionStorage.getItem('signupFormData');
+//   if (savedFormData) {
+//     const formData = JSON.parse(savedFormData);
+//     const form = document.querySelector('.signup-form');
     
-    if (formData.username) form.username.value = formData.username;
-    if (formData.password) form.password.value = formData.password;
-    if (formData.firstName) form.firstName.value = formData.firstName;
-    if (formData.lastName) form.lastName.value = formData.lastName;
-    if (formData.email) form.email.value = formData.email;
-    if (formData.phone) form.phone.value = formData.phone;
-    if (formData.address) form.address.value = formData.address;
-  }
-});
+//     if (formData.username) form.username.value = formData.username;
+//     if (formData.password) form.password.value = formData.password;
+//     if (formData.firstName) form.firstName.value = formData.firstName;
+//     if (formData.lastName) form.lastName.value = formData.lastName;
+//     if (formData.email) form.email.value = formData.email;
+//     if (formData.phone) form.phone.value = formData.phone;
+//     if (formData.address) form.address.value = formData.address;
+//   }
+// });
 
 // Save form data to sessionStorage as user types
-document.querySelector('.signup-form').addEventListener('input', (e) => {
-  const form = e.currentTarget;
-  const formData = {
-    username: form.username.value,
-    password: form.password.value,
-    firstName: form.firstName.value,
-    lastName: form.lastName.value,
-    email: form.email.value,
-    phone: form.phone.value,
-    address: form.address.value
-  };
-  sessionStorage.setItem('signupFormData', JSON.stringify(formData));
-});
+// document.querySelector('.signup-form').addEventListener('input', (e) => {
+//   const form = e.currentTarget;
+//   const formData = {
+//     username: form.username.value,
+//     password: form.password.value,
+//     firstName: form.firstName.value,
+//     lastName: form.lastName.value,
+//     email: form.email.value,
+//     phone: form.phone.value,
+//     address: form.address.value
+//   };
+//   sessionStorage.setItem('signupFormData', JSON.stringify(formData));
+// }
+
+
+// );
