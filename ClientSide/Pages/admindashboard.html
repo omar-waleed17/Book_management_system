@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Customer Dashboard</title>
+  <title>Admin Dashboard</title>
   <link rel="icon" type="image/jpeg" href="../images/favicon.png">
-  <link rel="stylesheet" href="../css/customerdashboard.css">
+  <link rel="stylesheet" href="../css/admindashboard.css">
 </head>
 <body>
   <script>
     // Check authentication before page loads
-    if (localStorage.getItem("isLoggedIn") !== "true") {
+    if (localStorage.getItem("isLoggedIn") !== "true" || localStorage.getItem("role") === "user") {
       window.location.href = "../index.html";
     }
   </script>
@@ -17,6 +17,7 @@
   <div class="sidebar">
     <h2>Dashboard</h2>
     <a href="profile.html">👤 Profile</a>
+    <a href="createBook.html">📖 Add Books</a>
     <a href="customerbooks.html">📚 Search Books</a>
     <a href="cart.html">🛒 Cart</a>
     <a href="orders.html">📦 Orders</a>
