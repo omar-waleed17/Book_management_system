@@ -85,23 +85,18 @@ document.querySelector('.book-form').addEventListener('submit', async (e) => {
     alert('Only JPG, JPEG, and PNG images are allowed.');
     return;
   }
-  
-  // Convert image to base64 for localStorage
-  let imageBase64 = '';
-  if (imageFile) {
-    imageBase64 = await convertToBase64(imageFile);
-  }
 
+  // Prepare book data according to backend API structure
   const bookData = {
     isbn: form.isbn.value.trim(),
-    bookName: form.bookName.value.trim(),
-    author: form.author.value.trim(),
-    publisher: form.publisher.value.trim(),
-    price: parseFloat(form.price.value),
-    image: imageBase64,
-    genre: form.genre.value,
-    threshold: parseInt(form.threshold.value),
-    publicationYear: parseInt(form.publicationYear.value)
+    title: form.bookName.value.trim(),
+    publisherId: parseInt(form.publisher.value) || 1, // Assuming publisher dropdown returns ID
+    publicationYear: parseInt(form.publicationYear.value),
+    sellingPrice: parseFloat(form.price.value),
+    category: form.genre.value,
+    quantityInStock: parseInt(form.threshold.value) || 50, // Default stock
+    thresholdQuantity: parseInt(form.threshold.value) || 20,
+    authors: form.author.value.trim().split(',').map(a => a.trim()) // Convert comma-separated to array
   };
 
   // Validation
@@ -110,7 +105,7 @@ document.querySelector('.book-form').addEventListener('submit', async (e) => {
     return;
   }
 
-  if (bookData.price <= 0) {
+  if (bookData.sellingPrice <= 0) {
     alert('Price must be greater than 0.');
     return;
   }
@@ -120,29 +115,64 @@ document.querySelector('.book-form').addEventListener('submit', async (e) => {
     return;
   }
 
-  if (bookData.threshold < 0) {
+  if (bookData.thresholdQuantity < 0) {
     alert('Threshold cannot be negative.');
     return;
   }
 
-  // Save to localStorage (can be modified to send to backend)
-  let books = JSON.parse(localStorage.getItem('books')) || [];
-  
-  // Check if ISBN already exists
-  if (books.some(book => book.isbn === bookData.isbn)) {
-    alert('A book with this ISBN already exists.');
+  console.log("Attempting to add book:", bookData);
+
+  // Try backend API first
+  try {
+    const token = localStorage.getItem("accessToken");
+    
+    if (!token) {
+      alert("You must be logged in as an admin to add books.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    const response = await fetch("http://localhost:8080/api/admin/books", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(bookData),
+    });
+
+    console.log("Response status:", response.status);
+
+    if (response.status === 401 || response.status === 403) {
+      alert("Unauthorized. Please login as admin.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
+      throw new Error(`Failed to add book: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log("Book added successfully:", result);
+
+    // Clear sessionStorage after successful submission
+    sessionStorage.removeItem('createBookFormData');
+
+    alert('Book added successfully via backend!');
+    form.reset();
+    document.querySelector('.file-name').textContent = 'No file chosen';
     return;
+
+  } catch (error) {
+    console.error("Backend error:", error);
+    alert("Failed to add book: " + error.message);
   }
 
-  books.push(bookData);
-  localStorage.setItem('books', JSON.stringify(books));
-
-  // Clear sessionStorage after successful submission
-  sessionStorage.removeItem('createBookFormData');
-
-  alert('Book added successfully!');
-  form.reset();
-  document.querySelector('.file-name').textContent = 'No file chosen';
+  // Note: Image upload might need a separate endpoint or FormData
+  // If backend requires multipart/form-data for images, we'll need to adjust
 });
 
 // Helper function to convert file to base64
