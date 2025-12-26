@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import AlexUni.BookStore.AuthenticationService.dto.ApiResponse;
 import AlexUni.BookStore.BookService.entity.Book;
 import AlexUni.BookStore.BookService.service.BookService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +48,7 @@ public class BookController {
             List<Book> books = bookService.loadBooksByAdvancedSearch(isbn, title, category, author, publisher);
             return ResponseEntity.ok(books);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }
     }
     
