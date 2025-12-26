@@ -11,8 +11,7 @@ CREATE TABLE publisher (
 
 CREATE TABLE author (
   author_id INT PRIMARY KEY AUTO_INCREMENT,
-  fname VARCHAR(50),
-  lname VARCHAR(50)
+  name VARCHAR(50)
 );
 
 CREATE TABLE book (
