@@ -55,7 +55,7 @@ public class OrderProcessingRepository {
             ps.setInt(1, orderId);
             ps.setString(2, item.getIsbn());
             ps.setInt(3, item.getQuantity());
-            ps.setDouble(4, item.getUnitprice());
+            ps.setDouble(4, item.getUnitPrice());
         }
         @Override
         public int getBatchSize() {

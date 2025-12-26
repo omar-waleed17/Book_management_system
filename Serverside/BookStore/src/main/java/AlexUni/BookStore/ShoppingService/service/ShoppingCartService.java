@@ -53,7 +53,7 @@ public class ShoppingCartService {
     protected double calculateTotalPrice(List<CartDetails> orderDetails) {
         double totalPrice = 0;
         for (CartDetails item : orderDetails) {
-            totalPrice += item.getUnitprice() * item.getQuantity();
+            totalPrice += item.getUnitPrice() * item.getQuantity();
         }
         return totalPrice;
     }
