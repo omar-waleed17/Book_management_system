@@ -10,11 +10,28 @@
 <body>
   <script>
     // Check authentication before page loads
-    if (localStorage.getItem("isLoggedIn") !== "true" || localStorage.getItem("role") === "user") {
+    const role = localStorage.getItem("role");
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    
+    if (isLoggedIn !== "true" || role?.toLowerCase() !== "admin") {
+      alert("Access denied. Admin privileges required.");
       window.location.href = "../index.html";
     }
   </script>
-  <div class="container">
+
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <a href="admindashboard.html">🏠 Home</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="createBook.html" class="active">📖 Add Books</a>
+    <a href="customerbooks.html">📚 Search Books</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="adminAcceptOrders.html">📦 Orders</a>
+    <a href="systemReports.html">📊 Reports</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+  </div>
+
+  <div class="content">
     <div class="content-box">
       <h1>Add New Book</h1>
       <form class="book-form">
@@ -65,5 +82,17 @@
   </div>
 
   <script src="../js/createBook.js"></script>
+  <script>
+    // Handle logout
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("role");
+      window.location.href = "../index.html";
+    });
+  </script>
 </body>
 </html>
