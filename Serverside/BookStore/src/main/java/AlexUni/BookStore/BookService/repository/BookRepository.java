@@ -135,5 +135,10 @@ public class BookRepository {
         });
     }
 
+    public int getStockQuantity(String isbn) {
+        String sql = "SELECT quantity FROM book WHERE isbn = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, isbn);
+    }
+
     
 }

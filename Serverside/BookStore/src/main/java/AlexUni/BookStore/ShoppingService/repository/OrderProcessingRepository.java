@@ -38,7 +38,11 @@ public class OrderProcessingRepository {
             throw new RuntimeException("Error inserting order: " + e.getMessage());
         }
         // Retrieve the generated ID
-        return keyHolder.getKey().intValue(); 
+        Number key = keyHolder.getKey();
+        if (key != null) {
+            return key.intValue();
+        }
+        throw new RuntimeException("Failed to retrieve generated order ID.");
     }
 
     public void insertOrderDetails(int orderId, List<CartDetails> orderDetails) {

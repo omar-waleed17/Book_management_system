@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import AlexUni.BookStore.BookService.repository.BookRepository;
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
@@ -60,19 +61,31 @@ public class OrderProcessingSerivce {
         return formattedDate;
     }
 
+    @Transactional
     public int processOrder(String userName, String cnn, String exp, String cvv, String amount) {
         if (!validateCard(cnn, exp, cvv, amount)) {
             throw new IllegalArgumentException("Invalid card details");
         }
-        List<CartDetails> orderDetails = shoppingCartService.loadAllCartContent(userName).getCartDetails();
-        // Insert order and order details
         exp = convertDateFormat(exp);
+        List<CartDetails> orderDetails = shoppingCartService.loadAllCartContent(userName).getCartDetails();
+        // Check stock availability
+        checkStockAvailability(orderDetails);
+        // Insert order and order details
         insertCartToOrder(userName, cnn, exp, orderDetails);
         // Update stock levels
         updateStockLevels(orderDetails);
         // clear shopping cart
         int rowsAffected = shoppingCartService.saveCartForUser(userName);
         return rowsAffected;
+    }
+
+    private void checkStockAvailability(List<CartDetails> orderDetails) {
+        for (CartDetails item : orderDetails) {
+            int availableStock = bookRepository.getStockQuantity(item.getIsbn());
+            if (availableStock < item.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for book: " + item.getIsbn() + ". Available: " + availableStock + ", Requested: " + item.getQuantity());
+        }
+        }
     }
 
     private void updateStockLevels(List<CartDetails> orderDetails) {
