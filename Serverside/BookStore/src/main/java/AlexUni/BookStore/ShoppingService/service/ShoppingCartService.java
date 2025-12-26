@@ -26,6 +26,7 @@ public class ShoppingCartService {
     }
 
     public int saveItemToCart(String userName, String isbn, int quantity) {
+        // TODO: check if quantity is available in stock
         int rowsAffected = cartDetailsRepository.addItemToCart(userName, isbn, quantity).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
         return rowsAffected;
     }
@@ -36,6 +37,7 @@ public class ShoppingCartService {
     }
 
     public int updateItemInCart(String userName, String isbn, int quantity) {
+        // TODO: check if quantity is available in stock
         int rowsAffected = cartDetailsRepository.updateItemToCart(userName, isbn, quantity).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
         return rowsAffected;
     }

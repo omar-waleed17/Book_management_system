@@ -12,5 +12,8 @@ import lombok.NoArgsConstructor;
 public class CartDetails {
     // private int cartId;
     private String isbn;
-    private int quantity;    
+    private String title;
+    private int quantity;   
+    private int maxQuantity;
+    private String imgPath ;
 }
