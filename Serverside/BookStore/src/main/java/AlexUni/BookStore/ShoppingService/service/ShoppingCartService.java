@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import AlexUni.BookStore.BookService.repository.BookRepository;
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
 import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 import AlexUni.BookStore.ShoppingService.repository.CartDetailsRepository;
@@ -17,6 +18,8 @@ public class ShoppingCartService {
     private ShoppingCartRepository shoppingCartRepository;
     @Autowired
     private CartDetailsRepository cartDetailsRepository;
+    @Autowired
+    private BookRepository bookRepository;
     
     public ShoppingCart loadAllCartContent(String userName) {
         ShoppingCart shoppingCart = shoppingCartRepository.findAllCartDetails(userName).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
@@ -29,7 +32,10 @@ public class ShoppingCartService {
     }
 
     public int saveItemToCart(String userName, String isbn, int quantity) {
-        // TODO: check if quantity is available in stock
+        if (quantity == 0) return 0;
+        if (quantity > bookRepository.getStockQuantity(isbn)) {
+            throw new IllegalArgumentException("Requested quantity exceeds available stock");
+        }
         int rowsAffected = cartDetailsRepository.addItemToCart(userName, isbn, quantity).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
         return rowsAffected;
     }
@@ -40,7 +46,10 @@ public class ShoppingCartService {
     }
 
     public int updateItemInCart(String userName, String isbn, int quantity) {
-        // TODO: check if quantity is available in stock
+        if (quantity == 0) return deleteItemFromCart(userName, isbn);
+        if (quantity > bookRepository.getStockQuantity(isbn)) {
+            throw new IllegalArgumentException("Requested quantity exceeds available stock");
+        }
         int rowsAffected = cartDetailsRepository.updateItemToCart(userName, isbn, quantity).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
         return rowsAffected;
     }
