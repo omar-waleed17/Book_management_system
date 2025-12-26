@@ -28,7 +28,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bookstore?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpassword
+      SPRING_DATASOURCE_PASSWORD: pass
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
     ports:
       - "8080:8080"
@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile
     container_name: bookstore-frontend
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - backend
     networks:
