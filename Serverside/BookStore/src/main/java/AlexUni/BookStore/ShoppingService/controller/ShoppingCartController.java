@@ -78,7 +78,7 @@ public class ShoppingCartController {
             // ShoppingCart shoppingCart = shoppingCartService.loadAllCartContent(userName); // userId obtained from acess token
             return ResponseEntity.ok(items);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -88,9 +88,9 @@ public class ShoppingCartController {
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         try {
             int rowsAffected = shoppingCartService.saveItemToCart(userName, isbn, quantity); // userId obtained from acess token
-            return ResponseEntity.ok(rowsAffected);
+            return ResponseEntity.ok(new ApiResponse(false, rowsAffected + " rows affected"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -100,9 +100,9 @@ public class ShoppingCartController {
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         try {
             int rowsAffected = shoppingCartService.deleteItemFromCart(userName, isbn); // userId obtained from acess token
-            return ResponseEntity.ok(rowsAffected);
+            return ResponseEntity.ok(new ApiResponse(false, rowsAffected + " rows affected"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -112,9 +112,9 @@ public class ShoppingCartController {
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated"); 
         try {
             int rowsAffected = shoppingCartService.updateItemInCart(userName, isbn, quantity); // userId obtained from acess token
-            return ResponseEntity.ok(rowsAffected);
+            return ResponseEntity.ok(new ApiResponse(false, rowsAffected + " rows affected"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -124,9 +124,9 @@ public class ShoppingCartController {
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         try {
             int rowsAffected = shoppingCartService.saveCartForUser(userName); // userId obtained from acess token
-            return ResponseEntity.ok(rowsAffected);
+            return ResponseEntity.ok(new ApiResponse(false, rowsAffected + " rows affected"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -136,9 +136,9 @@ public class ShoppingCartController {
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         try {
             int rowsAffected = shoppingCartService.deleteCart(userName);
-            return ResponseEntity.ok(rowsAffected);
+            return ResponseEntity.ok(new ApiResponse(false, rowsAffected + " rows affected"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }    
     }
     
