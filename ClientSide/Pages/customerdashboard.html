@@ -3,16 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Customer Dashboard</title>
+  <link rel="icon" type="image/jpeg" href="../images/favicon.png">
   <link rel="stylesheet" href="../css/customerdashboard.css">
 </head>
 <body>
+  <script>
+    // Check authentication before page loads
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "../index.html";
+    }
+  </script>
+  
   <div class="sidebar">
     <h2>Dashboard</h2>
     <a href="profile.html">👤 Profile</a>
     <a href="customerbooks.html">📚 Search Books</a>
     <a href="cart.html">🛒 Cart</a>
     <a href="orders.html">📦 Orders</a>
-    <a href="login.html">🚪 Logout</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
   </div>
 
 
@@ -21,5 +29,16 @@
   </div>
 
   <script src="../js/customerdashboard.js"></script>
+  <script>
+    // Handle logout
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("currentUser");
+      window.location.href = "../index.html";
+    });
+  </script>
 </body>
 </html>
