@@ -62,40 +62,40 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
     console.log("Backend signup response:", result);
 
     // Auto-login after successful signup
-    try {
-      const loginResponse = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password
-        }),
-      });
+    // try {
+    //   const loginResponse = await fetch("http://localhost:8080/api/auth/login", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({
+    //       username: formData.username,
+    //       password: formData.password
+    //     }),
+    //   });
 
-      if (loginResponse.ok) {
-        const loginData = await loginResponse.json();
+    //   if (loginResponse.ok) {
+    //     const loginData = await loginResponse.json();
         
-        // Save tokens + metadata from backend response
-        localStorage.setItem("accessToken", loginData.accessToken);
-        localStorage.setItem("refreshToken", loginData.refreshToken);
-        localStorage.setItem("username", loginData.username);
-        localStorage.setItem("role", loginData.role);
-        localStorage.setItem("isLoggedIn", "true");
+    //     // Save tokens + metadata from backend response
+    //     localStorage.setItem("accessToken", loginData.accessToken);
+    //     localStorage.setItem("refreshToken", loginData.refreshToken);
+    //     localStorage.setItem("username", loginData.username);
+    //     localStorage.setItem("role", loginData.role);
+    //     localStorage.setItem("isLoggedIn", "true");
 
-        alert("Account created successfully! Welcome " + loginData.username);
-        window.location.href = "customerdashboard.html";
-        return;
-      }
-    } catch (loginError) {
-      console.warn("Auto-login failed:", loginError);
-      alert("Signup successful! Please log in.");
-      window.location.href = "login.html";
-      return;
-    }
+    //     alert("Account created successfully! Welcome " + loginData.username);
+    //     window.location.href = "customerdashboard.html";
+    //     return;
+    //   }
+    // } catch (loginError) {
+    //   console.warn("Auto-login failed:", loginError);
+    //   alert("Signup successful! Please log in.");
+    //   window.location.href = "login.html";
+    //   return;
+    // }
   } catch (error) {
     console.warn("Backend not available, falling back to LocalStorage:", error);
   }
-  
+
   // LocalStorage fallback - also auto-login
   localStorage.setItem("signupData", JSON.stringify(formData));
   localStorage.setItem("currentUser", JSON.stringify(formData));
@@ -107,7 +107,8 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
   
   alert("Account created successfully! Welcome " + formData.username);
   window.location.href = "customerdashboard.html";
-});
+  }
+);
 
 // Restore form data from sessionStorage on page load
 // window.addEventListener('DOMContentLoaded', () => {

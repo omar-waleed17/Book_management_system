@@ -31,6 +31,7 @@ document
     this.classList.toggle("active");
   });
 
+//onlogin submission
 document.querySelector(".login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -39,8 +40,9 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     password: e.target.password.value.trim(),
   };
 
-  // OPTION 1 reqeust and response
+  console.log("Attempting login with:", { username: loginData.username });
 
+  // OPTION 1: Backend API
   try {
     const response = await fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
@@ -48,9 +50,18 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
       body: JSON.stringify(loginData),
     });
 
-    if (!response.ok) throw new Error("Backend login failed");
-
     const data = await response.json();
+    console.log("Backend response:", data);
+
+    if (!response.ok) {
+      // 401 means wrong credentials, not server error
+      if (response.status === 401) {
+        alert(data.message || "Invalid username or password");
+        return;
+        1; // Stop here, don't fall back to LocalStorage
+      }
+      throw new Error("Backend server error");
+    }
 
     // Save tokens + metadata from backend response
     localStorage.setItem("accessToken", data.accessToken);
@@ -59,36 +70,44 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     localStorage.setItem("role", data.role);
     localStorage.setItem("isLoggedIn", "true");
 
+    sessionStorage.removeItem("loginFormData");
+
     alert("Login successful via backend! Welcome " + data.username);
-    window.location.href = "customerdashboard.html";
-    return; // stop here if backend worked
+    if (localStorage.getItem("role").toLowerCase() === "admin") {
+      window.location.href = "admindashboard.html";
+    } else window.location.href = "customerdashboard.html";
+    return;
   } catch (error) {
-    console.warn("Backend not available, falling back to LocalStorage:", error);
+    console.error("Backend error:", error);
+    // Only fall back if backend is completely unavailable (not 401)
+    if (error.message === "Failed to fetch") {
+      console.warn("Backend not available, trying LocalStorage...");
+    } else {
+      return; // Stop if it's any other error
+    }
   }
 
-  // OPTION 2: LocalStorage
+  // OPTION 2: LocalStorage fallback (only if backend is down)
+  const savedUser = JSON.parse(localStorage.getItem("signupData") || "null");
+  if (!savedUser) {
+    alert(
+      "Backend unavailable and no local account found. Please try again later."
+    );
+    return;
+  }
 
-  //   const savedUser = JSON.parse(localStorage.getItem("signupData"));
-  //   if (!savedUser) {
-  //     alert("No account found locally. Please sign up first.");
-  //     return;
-  //   }
+  if (
+    loginData.username === savedUser.username &&
+    loginData.password === savedUser.password
+  ) {
+    localStorage.setItem("currentUser", JSON.stringify(savedUser));
+    localStorage.setItem("isLoggedIn", "true");
+    sessionStorage.removeItem("loginFormData");
 
-  //   if (
-  //     loginData.username === savedUser.username &&
-  //     loginData.password === savedUser.password
-  //   ) {
-  //     localStorage.setItem("currentUser", JSON.stringify(savedUser));
-  //     localStorage.setItem("isLoggedIn", "true");
-
-  //     // Clear sessionStorage after successful login
-  //     sessionStorage.removeItem('loginFormData');
-
-  //     alert("Login successful (LocalStorage)! Welcome " + savedUser.username);
-  //     window.location.href = "customerdashboard.html";
-  //   } else {
-  //     alert("Invalid username or password (LocalStorage check).");
-  //   }
-  // }
+    alert("Login successful (LocalStorage)! Welcome " + savedUser.username);
+    window.location.href = "customerdashboard.html";
+  } else {
+    alert("Invalid username or password.");
+  }
 });
 /////will handle login either customer or admin
