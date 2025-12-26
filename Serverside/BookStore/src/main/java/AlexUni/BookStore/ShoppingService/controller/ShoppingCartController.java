@@ -11,8 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import AlexUni.BookStore.AuthenticationService.dto.ApiResponse;
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
 import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
+import AlexUni.BookStore.ShoppingService.service.OrderProcessingSerivce;
 import AlexUni.BookStore.ShoppingService.service.ShoppingCartService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +33,8 @@ public class ShoppingCartController {
     
     @Autowired
     private ShoppingCartService shoppingCartService;
+    @Autowired
+    private OrderProcessingSerivce orderProcessingService;
 
     private String authenticateUserGetName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -39,6 +43,19 @@ public class ShoppingCartController {
         }
         return authentication.getName();
     }
+
+    @GetMapping("/checkout")
+    public ResponseEntity<?> getMethodName(@RequestParam String cnn, @RequestParam String exp, @RequestParam String cvv, @RequestParam String amount) {
+        String userName = authenticateUserGetName();
+        if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        try {
+            int sucess = orderProcessingService.processOrder(userName, cnn, exp, cvv, amount);
+            return ResponseEntity.ok(new ApiResponse(true, "Order processed successfully", sucess + " rows affected"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+    
     
     @GetMapping("/cart")
     public ResponseEntity<?> getCart() { 

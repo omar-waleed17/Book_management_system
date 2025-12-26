@@ -16,4 +16,5 @@ public class CartDetails {
     private int quantity;   
     private int maxQuantity;
     private String imgPath ;
+    private double unitprice;
 }

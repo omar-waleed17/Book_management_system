@@ -48,6 +48,7 @@ public class ShoppingCartRepository {
         item.setMaxQuantity(rs.getInt("maxQuantity"));
         item.setImgPath(rs.getString("img_path"));
         item.setTitle(rs.getString("title"));
+        item.setUnitprice(rs.getDouble("selling_price"));
         shoppingCart.getItems().add(item);
     } while (rs.next());
 
@@ -56,7 +57,7 @@ public class ShoppingCartRepository {
 
     public Optional<ShoppingCart> findAllCartDetails(String username) {
         
-        String sqlString = "SELECT sc.cart_id, cd.isbn, cd.quantity, b.quantity AS maxQuantity, b.img_path, b.title " + //
+        String sqlString = "SELECT sc.cart_id, cd.isbn, cd.quantity, b.quantity AS maxQuantity, b.selling_price, b.img_path, b.title " + //
                         "FROM shopping_cart sc JOIN cart_details cd ON sc.cart_id = cd.cart_id " + //
                         "JOIN users u ON sc.user_id = u.user_id " + //
                         "JOIN book b ON b.isbn = cd.isbn WHERE u.username = ?"; // userId obtained from access token

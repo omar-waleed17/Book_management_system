@@ -1,8 +1,11 @@
 package AlexUni.BookStore.ShoppingService.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import AlexUni.BookStore.ShoppingService.entity.CartDetails;
 import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 import AlexUni.BookStore.ShoppingService.repository.CartDetailsRepository;
 import AlexUni.BookStore.ShoppingService.repository.ShoppingCartRepository;
@@ -45,5 +48,13 @@ public class ShoppingCartService {
     public int deleteItemFromCart(String userName, String isbn) {
         int rowsAffected = cartDetailsRepository.deleteItemFromCart(userName, isbn).orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
         return rowsAffected;
+    }
+
+    protected double calculateTotalPrice(List<CartDetails> orderDetails) {
+        double totalPrice = 0;
+        for (CartDetails item : orderDetails) {
+            totalPrice += item.getUnitprice() * item.getQuantity();
+        }
+        return totalPrice;
     }
 }
