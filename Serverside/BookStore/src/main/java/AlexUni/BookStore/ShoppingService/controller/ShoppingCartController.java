@@ -46,7 +46,7 @@ public class ShoppingCartController {
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         try {
             List<CartDetails> items = shoppingCartService.loadAllCartContent(userName).getCartDetails();
-            ShoppingCart shoppingCart = shoppingCartService.loadAllCartContent(userName); // userId obtained from acess token
+            // ShoppingCart shoppingCart = shoppingCartService.loadAllCartContent(userName); // userId obtained from acess token
             return ResponseEntity.ok(items);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
