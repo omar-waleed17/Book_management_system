@@ -10,7 +10,6 @@ body {
   display: flex;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
 }
 
 .sidebar {
@@ -105,105 +104,151 @@ body {
 
 .content {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 40px;
   overflow-y: auto;
 }
 
-.profile-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 40px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: fadeInScale 0.8s ease-in-out;
-}
-
-
-.profile-container h2 {
-  text-align: center;
+.content h1 {
+  color: white;
+  font-size: 32px;
   margin-bottom: 30px;
-  font-weight: 700;
-  font-size: 2rem;
-  color: #2c3e50;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-#profileForm {
+.orders-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+}
+
+.order-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.order-card.confirmed {
+  background: linear-gradient(135deg, #d4f1d4 0%, #e8f8e8 100%);
+  border-color: #4caf50;
+}
+
+.order-header {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  text-align: center;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ecf0f1;
 }
 
-#profileForm label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #555;
-  margin-bottom: -12px;
+.order-header h3 {
+  color: #2c3e50;
+  font-size: 22px;
 }
 
-#profileForm input {
-  padding: 14px 18px;
-  border: 2px solid #e0e0e0;
-  background: #fff;
+.order-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #ffc107;
   color: #333;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#profileForm input:focus {
-  outline: none;
-  border-color: #667eea;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+.order-card.confirmed .order-status {
+  background-color: #4caf50;
+  color: white;
 }
 
+.order-details {
+  margin-bottom: 20px;
+}
 
-#profileForm button {
-  padding: 16px 24px;
+.order-details p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 15px;
+}
+
+.book-info {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.order-card.confirmed .book-info {
+  background: #e8f5e9;
+}
+
+.book-image {
+  flex-shrink: 0;
+}
+
+.book-image img {
+  width: 100px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.book-details {
+  flex: 1;
+}
+
+.book-details h4 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.book-details p {
+  margin: 6px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.order-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 12px 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-  margin-top: 10px;
+  transition: all 0.3s ease;
 }
 
-#profileForm button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+.confirm-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-#profileForm button:active {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+.confirm-btn:disabled {
+  background: #4caf50;
+  cursor: not-allowed;
+  opacity: 0.9;
 }
 
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Responsive design */
 @media (max-width: 768px) {
   body {
     flex-direction: column;
@@ -211,18 +256,15 @@ body {
 
   .sidebar {
     width: 100%;
-    padding: 15px 0;
+    padding: 15px;
   }
 
   .content {
     padding: 20px;
   }
 
-  .profile-container {
-    padding: 30px 20px;
-  }
-
-  .profile-container h2 {
-    font-size: 1.5rem;
+  .orders-container {
+    grid-template-columns: 1fr;
   }
 }
+

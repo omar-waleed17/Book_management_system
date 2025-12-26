@@ -1,5 +1,5 @@
 // Check if user is admin, redirect to index.html if not
-
+document.addEventListener("DOMContentLoaded", () => {
 const role = localStorage.getItem("role");
 const isLoggedIn = localStorage.getItem("isLoggedIn");
 
@@ -17,9 +17,14 @@ document.getElementById("logoutBtn").addEventListener("click", (e) => {
   localStorage.removeItem("currentUser");
   window.location.href = "../index.html";
 });
+
 const customerNameElement = document.getElementById("customerName");
+let username = localStorage.getItem("username");
+
 if (username) {
     customerNameElement.textContent = `Welcome ${username}`;
   } else {
     customerNameElement.textContent = "Welcome ADMIN";
   }
+
+});
