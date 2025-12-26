@@ -17,22 +17,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //     if (!response.ok) throw new Error("Backend not available");
 
-//     const data = await response.json();
+    // const data = await response.json();
 
-//     usernameField.value   = data.username;
-//     firstNameField.value  = data.firstName;
-//     lastNameField.value   = data.lastName;
-//     emailField.value      = data.email;
-//     phoneField.value      = data.phoneNumber;
-//     addressField.value    = data.shippingAddress;
+    // usernameField.value   = data.username;
+    // firstNameField.value  = data.firstName;
+    // lastNameField.value   = data.lastName;
+    // emailField.value      = data.email;
+    // phoneField.value      = data.phoneNumber;
+    // addressField.value    = data.shippingAddress;
   
 //   }
 //   */
 
 
 //   LocalStorage  (testing)
- 
-  const savedUser = JSON.parse(localStorage.getItem("signupData"));
+  
+  // First try currentUser (set on login/signup)
+  let savedUser = JSON.parse(localStorage.getItem("currentUser"));
+  
+  // Fallback to signupData if currentUser not found
+  if (!savedUser) {
+    savedUser = JSON.parse(localStorage.getItem("signupData"));
+  }
+  
   if (savedUser) {
     usernameField.value   = savedUser.username       || "";
     firstNameField.value  = savedUser.firstName      || "";
@@ -79,8 +86,9 @@ document.getElementById("profileForm").addEventListener("submit", (e) => {
     // }
     // */
 
-    // LocalStorage
+    // LocalStorage - update both locations
     localStorage.setItem("signupData", JSON.stringify(updatedData));
+    localStorage.setItem("currentUser", JSON.stringify(updatedData));
     alert("Profile updated locally (testing mode).");
   });
 });

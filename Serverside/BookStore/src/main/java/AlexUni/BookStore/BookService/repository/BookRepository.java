@@ -1,5 +1,6 @@
 package AlexUni.BookStore.BookService.repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -8,11 +9,13 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import AlexUni.BookStore.BookService.entity.Book;
+import AlexUni.BookStore.ShoppingService.entity.CartDetails;
 
 @Repository
 public class BookRepository {
@@ -32,6 +35,7 @@ public class BookRepository {
             book.setThresholdQuantity(rs.getInt("threshold"));
             book.setPublicationYear(rs.getInt("publication_year"));
             book.setPublisherId(rs.getInt("pub_id"));
+            book.setPublisherName(rs.getString("pub_name"));
             book.setImgPath(rs.getString("img_path"));
             book.setAuthors(Arrays.asList(rs.getString("author_list").split(", ")));
             return book;
@@ -82,7 +86,7 @@ public class BookRepository {
     }
     // only this matters
     public List<Book> findByAdvancedSearch(String isbn, String title, String category, String author, String publisher) { // this does everything
-        String sqlString = "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list " +
+        String sqlString = "SELECT b.*, p.pub_name , GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list " +
                         "FROM book b NATURAL JOIN publisher p NATURAL JOIN authored_by ab " +
                         "NATURAL JOIN author a WHERE b.isbn IN " +
                         "(SELECT ab2.isbn FROM book b2 NATURAL JOIN publisher p2 NATURAL JOIN authored_by ab2 NATURAL JOIN author a2 " +
@@ -113,6 +117,28 @@ public class BookRepository {
             book.getPublicationYear(), book.getSellingPrice(), 
             book.getCategory(), book.getThresholdQuantity(), 
             book.getQuantityInStock(), book.getPublisherId(), book.getImgPath(), book.getIsbn());
+    }
+
+    public void updateBookStock(List<CartDetails> orderDetails) {
+        String sql = "UPDATE book SET quantity = quantity - ? WHERE isbn = ?";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                CartDetails detail = orderDetails.get(i);
+                ps.setInt(1, detail.getQuantity()); // The amount to subtract
+                ps.setString(2, detail.getIsbn());  // The target book
+            }
+
+            @Override
+            public int getBatchSize() {
+                return orderDetails.size();
+            }
+        });
+    }
+
+    public int getStockQuantity(String isbn) {
+        String sql = "SELECT quantity FROM book WHERE isbn = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, isbn);
     }
 
     

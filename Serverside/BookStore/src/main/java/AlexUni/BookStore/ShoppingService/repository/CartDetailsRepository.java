@@ -3,7 +3,6 @@ package AlexUni.BookStore.ShoppingService.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
-import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 
 @Repository
 public class CartDetailsRepository {

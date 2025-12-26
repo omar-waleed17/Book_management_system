@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add New Book - Ketaby Book Centre</title>
+  <link rel="icon" type="image/jpeg" href="../images/favicon.png">
+  <link rel="stylesheet" href="../css/createBook.css">
+</head>
+<body>
+  <script>
+    // Check authentication before page loads
+    const role = localStorage.getItem("role");
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    
+    if (isLoggedIn !== "true" || role?.toLowerCase() !== "admin") {
+      alert("Access denied. Admin privileges required.");
+      window.location.href = "../index.html";
+    }
+  </script>
+
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <a href="admindashboard.html">🏠 Home</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="createBook.html" class="active">📖 Add Books</a>
+    <a href="customerbooks.html">📚 Search Books</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="adminAcceptOrders.html">📦 Orders</a>
+    <a href="systemReports.html">📊 Reports</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+  </div>
+
+  <div class="content">
+    <div class="content-box">
+      <h1>Add New Book</h1>
+      <form class="book-form">
+        <input type="text" name="isbn" placeholder="ISBN" required />
+        
+        <input type="text" name="bookName" placeholder="Book Name" required />
+        
+        <input type="text" name="author" placeholder="Author" required />
+        
+        <input type="text" name="publisher" placeholder="Publisher" required />
+        
+        <input type="number" name="price" placeholder="Price ($)" min="0" step="0.01" required />
+        
+        <div class="file-input-container">
+          <label for="bookImage" class="file-label">
+            <span class="file-text">Choose Book Image</span>
+            <span class="file-name">No file chosen</span>
+          </label>
+          <input type="file" id="bookImage" name="bookImage" accept=".jpg,.jpeg,.png" required />
+        </div>
+        
+        <select name="genre" required>
+          <option value="" disabled selected>Select Genre</option>
+          <option value="Fiction">Fiction</option>
+          <option value="Non-Fiction">Non-Fiction</option>
+          <option value="Science Fiction">Science Fiction</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="Mystery">Mystery</option>
+          <option value="Thriller">Thriller</option>
+          <option value="Romance">Romance</option>
+          <option value="Horror">Horror</option>
+          <option value="Biography">Biography</option>
+          <option value="History">History</option>
+          <option value="Self-Help">Self-Help</option>
+          <option value="Science">Science</option>
+          <option value="Technology">Technology</option>
+          <option value="Business">Business</option>
+          <option value="Other">Other</option>
+        </select>
+        
+        <input type="number" name="threshold" placeholder="Stock Threshold" min="0" required />
+        
+        <input type="number" name="publicationYear" id="publicationYear" placeholder="Publication Year" min="1890" required />
+        
+        <button class="book-btn" type="submit">Add Book</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/createBook.js"></script>
+  <script>
+    // Handle logout
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("role");
+      window.location.href = "../index.html";
+    });
+  </script>
+</body>
+</html>
