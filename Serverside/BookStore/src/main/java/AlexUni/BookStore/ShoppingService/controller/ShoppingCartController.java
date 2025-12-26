@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -49,8 +48,8 @@ public class ShoppingCartController {
         String userName = authenticateUserGetName();
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         try {
-            int sucess = orderProcessingService.processOrder(userName, cnn, exp, cvv, amount);
-            return ResponseEntity.ok(new ApiResponse(true, "Order processed successfully", sucess + " rows affected"));
+            int rowsAffected = orderProcessingService.processOrder(userName, cnn, exp, cvv, amount);
+            return ResponseEntity.ok(new ApiResponse(true, "Order processed successfully", rowsAffected + " rows affected"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         }

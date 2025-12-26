@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import AlexUni.BookStore.BookService.repository.BookRepository;
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
-import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 import AlexUni.BookStore.ShoppingService.repository.OrderProcessingRepository;
 
 @Service
@@ -79,7 +78,7 @@ public class OrderProcessingSerivce {
         return rowsAffected;
     }
 
-    private void checkStockAvailability(List<CartDetails> orderDetails) {
+    private void checkStockAvailability(List<CartDetails> orderDetails) { // can be done direclty in sql with when clause
         for (CartDetails item : orderDetails) {
             int availableStock = bookRepository.getStockQuantity(item.getIsbn());
             if (availableStock < item.getQuantity()) {
