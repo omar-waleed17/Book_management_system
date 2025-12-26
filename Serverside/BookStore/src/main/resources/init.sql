@@ -1,5 +1,3 @@
-drop database bookstore;
-create database bookstore;
 USE bookstore;
 
 CREATE TABLE publisher (

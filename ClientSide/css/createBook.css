@@ -1,0 +1,213 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #fff;
+}
+
+/* Hero section */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: url('../images/profilebackground.jpg') center/cover no-repeat fixed, linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.content-box {
+  margin-top: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeInScale 0.8s ease-out;
+}
+
+.content-box h1 {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.book-form input,
+.book-form select {
+  padding: 16px 20px;
+  font-size: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.book-form input::placeholder,
+.book-form select option {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+}
+
+.book-form select {
+  cursor: pointer;
+}
+
+.book-form select option {
+  background: #2a2a3e;
+  color: #fff;
+}
+
+.book-form input:focus,
+.book-form select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+}
+
+/* File input styling */
+.file-input-container {
+  position: relative;
+}
+
+.file-input-container input[type="file"] {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  font-size: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.file-label:hover {
+  border-color: #4a90e2;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+}
+
+.file-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.file-name {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-btn {
+  background: linear-gradient(135deg, #667eea 0%, #4a90e2 100%);
+  border: none;
+  color: #fff;
+  padding: 16px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+}
+
+.book-form button:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(74, 144, 226, 0.6);
+}
+
+.book-form button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+}
+
+/* Animations */
+.book-form input,
+.book-form select,
+.file-input-container,
+.book-form button {
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.book-form input:nth-child(1) { animation-delay: 0.1s; }
+.book-form input:nth-child(2) { animation-delay: 0.2s; }
+.book-form input:nth-child(3) { animation-delay: 0.3s; }
+.book-form input:nth-child(4) { animation-delay: 0.4s; }
+.book-form input:nth-child(5) { animation-delay: 0.5s; }
+.file-input-container { animation-delay: 0.6s; }
+.book-form select { animation-delay: 0.7s; }
+.book-form input:nth-child(8) { animation-delay: 0.8s; }
+.book-form input:nth-child(9) { animation-delay: 0.9s; }
+.book-form button { animation-delay: 1s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .content-box {
+    padding: 30px 20px;
+  }
+  
+  .content-box h1 {
+    font-size: 1.5rem;
+  }
+}
