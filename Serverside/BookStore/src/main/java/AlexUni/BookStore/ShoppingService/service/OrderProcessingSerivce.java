@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import AlexUni.BookStore.BookService.repository.BookRepository;
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
+import AlexUni.BookStore.ShoppingService.entity.Order;
 import AlexUni.BookStore.ShoppingService.repository.OrderProcessingRepository;
 
 @Service
@@ -89,6 +90,10 @@ public class OrderProcessingSerivce {
 
     private void updateStockLevels(List<CartDetails> orderDetails) {
         bookRepository.updateBookStock(orderDetails);
+    }
+
+    public List<Order> getOrdersForUser(String userName) {
+        return orderProcessingRepository.getOrdersByUsername(userName);
     }
     
 }

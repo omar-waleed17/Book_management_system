@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import AlexUni.BookStore.AuthenticationService.dto.ApiResponse;
 import AlexUni.BookStore.ShoppingService.entity.CartDetails;
+import AlexUni.BookStore.ShoppingService.entity.Order;
 import AlexUni.BookStore.ShoppingService.entity.ShoppingCart;
 import AlexUni.BookStore.ShoppingService.service.OrderProcessingSerivce;
 import AlexUni.BookStore.ShoppingService.service.ShoppingCartService;
@@ -43,7 +44,19 @@ public class ShoppingCartController {
         return authentication.getName();
     }
 
-    @GetMapping("/checkout")
+    @GetMapping("/orders")
+    public ResponseEntity<?> getOrders() {
+        String userName = authenticateUserGetName();
+        if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        try {
+            List<Order> orders = orderProcessingService.getOrdersForUser(userName);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/checkout")
     public ResponseEntity<?> getMethodName(@RequestParam String cnn, @RequestParam String exp, @RequestParam String cvv, @RequestParam String amount) {
         String userName = authenticateUserGetName();
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
