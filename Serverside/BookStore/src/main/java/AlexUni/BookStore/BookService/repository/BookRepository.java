@@ -35,6 +35,7 @@ public class BookRepository {
             book.setThresholdQuantity(rs.getInt("threshold"));
             book.setPublicationYear(rs.getInt("publication_year"));
             book.setPublisherId(rs.getInt("pub_id"));
+            book.setPublisherName(rs.getString("pub_name"));
             book.setImgPath(rs.getString("img_path"));
             book.setAuthors(Arrays.asList(rs.getString("author_list").split(", ")));
             return book;
@@ -85,7 +86,7 @@ public class BookRepository {
     }
     // only this matters
     public List<Book> findByAdvancedSearch(String isbn, String title, String category, String author, String publisher) { // this does everything
-        String sqlString = "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list " +
+        String sqlString = "SELECT b.*, p.pub_name , GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list " +
                         "FROM book b NATURAL JOIN publisher p NATURAL JOIN authored_by ab " +
                         "NATURAL JOIN author a WHERE b.isbn IN " +
                         "(SELECT ab2.isbn FROM book b2 NATURAL JOIN publisher p2 NATURAL JOIN authored_by ab2 NATURAL JOIN author a2 " +

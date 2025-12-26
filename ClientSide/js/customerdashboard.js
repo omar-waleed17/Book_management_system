@@ -2,10 +2,10 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const customerNameElement = document.getElementById("customerName");
-  
+
   // Try to get username from backend login (stored separately)
   let username = localStorage.getItem("username");
-  
+
   // Fallback to LocalStorage mode (currentUser object)
   if (!username) {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
       username = currentUser.username;
     }
   }
-  
+
   // Display the username
   if (username) {
     customerNameElement.textContent = `Welcome ${username}`;
@@ -21,6 +21,3 @@ document.addEventListener("DOMContentLoaded", () => {
     customerNameElement.textContent = "Welcome Guest";
   }
 });
-
-
-

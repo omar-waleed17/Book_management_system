@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Customer Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link rel="icon" type="image/jpeg" href="../images/favicon.png">
   <link rel="stylesheet" href="../css/profile.css">
 </head>
 <body>
@@ -12,9 +14,21 @@
       window.location.href = "../index.html";
     }
   </script>
-  <br>
-  
-  <div class="profile-container">
+
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <a href="admindashboard.html" id="homeLink">🏠 Home</a>
+    <a href="profile.html" class="active">👤 Profile</a>
+    <a href="createBook.html" id="addBooksLink">📖 Add Books</a>
+    <a href="customerbooks.html">📚 Search Books</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="adminAcceptOrders.html" id="ordersLink">📦 Orders</a>
+    <a href="systemReports.html" id="reportsLink">📊 Reports</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+  </div>
+
+  <div class="content">
+    <div class="profile-container">
     <h2>Edit Profile</h2>
     <form id="profileForm">
       <label>Username</label>
@@ -40,8 +54,32 @@
 
       <button type="submit">Save Changes</button>
     </form>
+    </div>
   </div>
 
   <script src="../js/profile.js"></script>
+  <script>
+    // Handle logout
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("role");
+      window.location.href = "../index.html";
+    });
+
+    // Adjust sidebar based on role
+    const role = localStorage.getItem("role");
+    if (role && role.toLowerCase() === "admin") {
+      document.getElementById("homeLink").href = "admindashboard.html";
+    } else {
+      document.getElementById("homeLink").href = "customerdashboard.html";
+      document.getElementById("addBooksLink").style.display = "none";
+      document.getElementById("ordersLink").style.display = "none";
+      document.getElementById("reportsLink").style.display = "none";
+    }
+  </script>
 </body>
 </html>

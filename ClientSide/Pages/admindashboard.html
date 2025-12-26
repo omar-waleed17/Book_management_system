@@ -6,40 +6,22 @@
   <link rel="icon" type="image/jpeg" href="../images/favicon.png">
   <link rel="stylesheet" href="../css/admindashboard.css">
 </head>
-<body>
-  <script>
-    // Check authentication before page loads
-    if (localStorage.getItem("isLoggedIn") !== "true" || localStorage.getItem("role") === "user") {
-      window.location.href = "../index.html";
-    }
-  </script>
-  
+<body> 
   <div class="sidebar">
     <h2>Dashboard</h2>
     <a href="profile.html">👤 Profile</a>
     <a href="createBook.html">📖 Add Books</a>
     <a href="customerbooks.html">📚 Search Books</a>
-    <a href="cart.html">🛒 Cart</a>
-    <a href="orders.html">📦 Orders</a>
-    <a href="#" id="logoutBtn">🚪 Logout</a>
+    <a href="adminAcceptOrders.html">📦 Orders</a>
+        <a href="systemReports.html" class="active">📊 Reports</a>
+    <a id="logoutBtn">🚪 Logout</a>
   </div>
 
 
   <div class="content">
-    <div class="overlay" id="customerName">Welcome  </div>
+    <div class="overlay" id="customerName">Welcome</div>
   </div>
 
-  <script src="../js/customerdashboard.js"></script>
-  <script>
-    // Handle logout
-    document.getElementById("logoutBtn").addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("currentUser");
-      window.location.href = "../index.html";
-    });
-  </script>
+  <script src="../js/admindashboard.js"></script>
 </body>
 </html>

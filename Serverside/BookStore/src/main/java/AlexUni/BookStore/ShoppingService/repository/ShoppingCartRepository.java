@@ -48,7 +48,7 @@ public class ShoppingCartRepository {
         item.setMaxQuantity(rs.getInt("maxQuantity"));
         item.setImgPath(rs.getString("img_path"));
         item.setTitle(rs.getString("title"));
-        item.setUnitprice(rs.getDouble("selling_price"));
+        item.setUnitPrice(rs.getDouble("selling_price"));
         shoppingCart.getItems().add(item);
     } while (rs.next());
 

@@ -95,7 +95,7 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
   } catch (error) {
     console.warn("Backend not available, falling back to LocalStorage:", error);
   }
-  
+
   // LocalStorage fallback - also auto-login
   localStorage.setItem("signupData", JSON.stringify(formData));
   localStorage.setItem("currentUser", JSON.stringify(formData));
@@ -107,7 +107,8 @@ document.querySelector(".signup-form").addEventListener("submit", async (e) => {
   
   alert("Account created successfully! Welcome " + formData.username);
   window.location.href = "customerdashboard.html";
-});
+  }
+);
 
 // Restore form data from sessionStorage on page load
 // window.addEventListener('DOMContentLoaded', () => {
