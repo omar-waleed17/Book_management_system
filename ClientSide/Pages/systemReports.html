@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Reports - Admin</title>
+  <link rel="icon" type="image/jpeg" href="../images/favicon.png">
+  <link rel="stylesheet" href="../css/systemReports.css">
+</head>
+<body>
+  <script>
+    
+  </script>
+
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <a href="admindashboard.html">🏠 Home</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="createBook.html">📖 Add Books</a>
+    <a href="customerbooks.html">📚 Search Books</a>
+    <a href="adminAcceptOrders.html">📦 Orders</a>
+    <a href="systemReports.html" class="active">📊 Reports</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+  </div>
+
+  <div class="content">
+    <h1>System Reports</h1>
+    
+    <div class="reports-container">
+      <!-- Report A: Total Sales Previous Month -->
+      <div class="report-card">
+        <div class="report-header">
+          <h3>📅 Previous Month Sales</h3>
+        </div>
+        <p class="report-description">Get total sales for all books from the previous month</p>
+        <button class="report-btn" onclick="generateReport('previousMonth')">Generate Report</button>
+      </div>
+
+      <!-- Report B: Sales for Specific Day -->
+      <div class="report-card">
+        <div class="report-header">
+          <h3>📆 Sales by Date</h3>
+        </div>
+        <p class="report-description">View total sales for a specific date</p>
+        <div class="input-group">
+          <label for="salesDate">Select Date:</label>
+          <input type="date" id="salesDate" class="date-input">
+        </div>
+        <button class="report-btn" onclick="generateReport('specificDay')">Generate Report</button>
+      </div>
+
+      <!-- Report C: Top 5 Customers -->
+      <div class="report-card">
+        <div class="report-header">
+          <h3>👥 Top 5 Customers</h3>
+        </div>
+        <p class="report-description">Top 5 customers by purchase amount (Last 3 Months)</p>
+        <button class="report-btn" onclick="generateReport('topCustomers')">Generate Report</button>
+      </div>
+
+      <!-- Report D: Top 10 Selling Books -->
+      <div class="report-card">
+        <div class="report-header">
+          <h3>📚 Top 10 Selling Books</h3>
+        </div>
+        <p class="report-description">Most popular books by copies sold (Last 3 Months)</p>
+        <button class="report-btn" onclick="generateReport('topBooks')">Generate Report</button>
+      </div>
+
+      <!-- Report E: Book Order History -->
+      <div class="report-card">
+        <div class="report-header">
+          <h3>📖 Book Order History</h3>
+        </div>
+        <p class="report-description">Total times a book has been ordered</p>
+        <div class="input-group">
+          <label for="bookId">Book ID or Title:</label>
+          <input type="text" id="bookId" class="text-input" placeholder="Enter book ID or title">
+        </div>
+        <button class="report-btn" onclick="generateReport('bookOrderHistory')">Generate Report</button>
+      </div>
+    </div>
+
+    <!-- Results Display Area -->
+    <div class="results-section" id="resultsSection" style="display: none;">
+      <div class="results-header">
+        <h2>Report Results</h2>
+        <button class="close-btn" onclick="closeResults()">✕</button>
+      </div>
+      <div class="results-content" id="resultsContent">
+        <!-- Results will be displayed here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/systemReports.js"></script>
+  
+</body>
+</html>

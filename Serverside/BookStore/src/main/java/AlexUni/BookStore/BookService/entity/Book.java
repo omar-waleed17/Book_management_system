@@ -20,6 +20,7 @@ public class Book {
     private Integer thresholdQuantity;
     private Integer quantityInStock;
     private Integer publisherId;
+    private String publisherName;
     private String imgPath;
     private List<String> authors;
 }

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Accept Orders - Admin</title>
+  <link rel="icon" type="image/jpeg" href="../images/favicon.png">
+  <link rel="stylesheet" href="../css/adminAcceptOrders.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <a href="profile.html">👤 Profile</a>
+    <a href="createBook.html">📖 Add Books</a>
+    <a href="customerbooks.html">📚 Search Books</a>
+    <a href="adminAcceptOrders.html" class="active">📦 Orders</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+    <a href="systemReports.html" class="active">📊 Reports</a>
+  </div>
+
+  <div class="content">
+    <h1>Pending Orders</h1>
+    
+    <div class="orders-container">
+      <!-- Order 1 -->
+      <div class="order-card" data-order-id="1">
+        <div class="order-header">
+          <h3>Order #1001</h3>
+          <span class="order-status">Pending</span>
+        </div>
+        <div class="order-details">
+          <p><strong>Customer:</strong> John Doe</p>
+          <p><strong>Date:</strong> Dec 26, 2025</p>
+        </div>
+        <div class="book-info">
+          <div class="book-image">
+            <img src="https://covers.openlibrary.org/b/id/7222246-M.jpg" alt="The Great Gatsby">
+          </div>
+          <div class="book-details">
+            <h4>Book Details:</h4>
+            <p><strong>Title:</strong> The Great Gatsby</p>
+            <p><strong>Author:</strong> F. Scott Fitzgerald</p>
+            <p><strong>Price:</strong> $15.99</p>
+            <p><strong>Quantity:</strong> 1</p>
+          </div>
+        </div>
+        <div class="order-actions">
+          <button class="confirm-btn" onclick="confirmOrder(1)">Confirm Order</button>
+        </div>
+      </div>
+
+      <!-- Order 2 -->
+      <div class="order-card" data-order-id="2">
+        <div class="order-header">
+          <h3>Order #1002</h3>
+          <span class="order-status">Pending</span>
+        </div>
+        <div class="order-details">
+          <p><strong>Customer:</strong> Jane Smith</p>
+          <p><strong>Date:</strong> Dec 27, 2025</p>
+        </div>
+        <div class="book-info">
+          <div class="book-image">
+            <img src="https://covers.openlibrary.org/b/id/8228691-M.jpg" alt="To Kill a Mockingbird">
+          </div>
+          <div class="book-details">
+            <h4>Book Details:</h4>
+            <p><strong>Title:</strong> To Kill a Mockingbird</p>
+            <p><strong>Author:</strong> Harper Lee</p>
+            <p><strong>Price:</strong> $12.50</p>
+            <p><strong>Quantity:</strong> 1</p>
+          </div>
+        </div>
+        <div class="order-actions">
+          <button class="confirm-btn" onclick="confirmOrder(2)">Confirm Order</button>
+        </div>
+      </div>
+
+      <!-- Order 3 -->
+      <div class="order-card" data-order-id="3">
+        <div class="order-header">
+          <h3>Order #1003</h3>
+          <span class="order-status">Pending</span>
+        </div>
+        <div class="order-details">
+          <p><strong>Customer:</strong> Michael Brown</p>
+          <p><strong>Date:</strong> Dec 27, 2025</p>
+        </div>
+        <div class="book-info">
+          <div class="book-image">
+            <img src="https://covers.openlibrary.org/b/id/10521270-M.jpg" alt="1984">
+          </div>
+          <div class="book-details">
+            <h4>Book Details:</h4>
+            <p><strong>Title:</strong> 1984</p>
+            <p><strong>Author:</strong> George Orwell</p>
+            <p><strong>Price:</strong> $14.99</p>
+            <p><strong>Quantity:</strong> 1</p>
+          </div>
+        </div>
+        <div class="order-actions">
+          <button class="confirm-btn" onclick="confirmOrder(3)">Confirm Order</button>
+        </div>
+      </div>
+
+      <!-- Order 4 -->
+      <div class="order-card" data-order-id="4">
+        <div class="order-header">
+          <h3>Order #1004</h3>
+          <span class="order-status">Pending</span>
+        </div>
+        <div class="order-details">
+          <p><strong>Customer:</strong> Sarah Johnson</p>
+          <p><strong>Date:</strong> Dec 27, 2025</p>
+        </div>
+        <div class="book-info">
+          <div class="book-image">
+            <img src="https://covers.openlibrary.org/b/id/10134552-M.jpg" alt="Pride and Prejudice">
+          </div>
+          <div class="book-details">
+            <h4>Book Details:</h4>
+            <p><strong>Title:</strong> Pride and Prejudice</p>
+            <p><strong>Author:</strong> Jane Austen</p>
+            <p><strong>Price:</strong> $11.99</p>
+            <p><strong>Quantity:</strong> 1</p>
+          </div>
+        </div>
+        <div class="order-actions">
+          <button class="confirm-btn" onclick="confirmOrder(4)">Confirm Order</button>
+        </div>
+      </div>
+
+      <!-- Order 5 -->
+      <div class="order-card" data-order-id="5">
+        <div class="order-header">
+          <h3>Order #1005</h3>
+          <span class="order-status">Pending</span>
+        </div>
+        <div class="order-details">
+          <p><strong>Customer:</strong> David Wilson</p>
+          <p><strong>Date:</strong> Dec 27, 2025</p>
+        </div>
+        <div class="book-info">
+          <div class="book-image">
+            <img src="https://covers.openlibrary.org/b/id/8231987-M.jpg" alt="The Catcher in the Rye">
+          </div>
+          <div class="book-details">
+            <h4>Book Details:</h4>
+            <p><strong>Title:</strong> The Catcher in the Rye</p>
+            <p><strong>Author:</strong> J.D. Salinger</p>
+            <p><strong>Price:</strong> $13.50</p>
+            <p><strong>Quantity:</strong> 1</p>
+          </div>
+        </div>
+        <div class="order-actions">
+          <button class="confirm-btn" onclick="confirmOrder(5)">Confirm Order</button>
+        </div>
+      </div>
+
+      <!-- Order 6 -->
+      <div class="order-card" data-order-id="6">
+        <div class="order-header">
+          <h3>Order #1006</h3>
+          <span class="order-status">Pending</span>
+        </div>
+        <div class="order-details">
+          <p><strong>Customer:</strong> Emily Davis</p>
+          <p><strong>Date:</strong> Dec 27, 2025</p>
+        </div>
+        <div class="book-info">
+          <div class="book-image">
+            <img src="https://covers.openlibrary.org/b/id/8739161-M.jpg" alt="Harry Potter and the Sorcerer's Stone">
+          </div>
+          <div class="book-details">
+            <h4>Book Details:</h4>
+            <p><strong>Title:</strong> Harry Potter and the Sorcerer's Stone</p>
+            <p><strong>Author:</strong> J.K. Rowling</p>
+            <p><strong>Price:</strong> $18.99</p>
+            <p><strong>Quantity:</strong> 1</p>
+          </div>
+        </div>
+        <div class="order-actions">
+          <button class="confirm-btn" onclick="confirmOrder(6)">Confirm Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="../js/adminAcceptOrders.js"></script>
+</body>
+</html>
