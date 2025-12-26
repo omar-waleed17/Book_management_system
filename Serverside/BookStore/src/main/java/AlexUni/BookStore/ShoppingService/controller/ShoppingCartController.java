@@ -43,7 +43,7 @@ public class ShoppingCartController {
         return authentication.getName();
     }
 
-    @GetMapping("/checkout")
+    @PostMapping("/checkout")
     public ResponseEntity<?> getMethodName(@RequestParam String cnn, @RequestParam String exp, @RequestParam String cvv, @RequestParam String amount) {
         String userName = authenticateUserGetName();
         if (userName == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
