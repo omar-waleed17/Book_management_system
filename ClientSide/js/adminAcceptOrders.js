@@ -57,15 +57,21 @@ async function loadPendingOrders() {
 // ============================================
 async function fetchBookByISBN(isbn) {
   try {
-    const response = await fetch(`http://localhost:8080/api/books/${isbn}`);
+    const response = await fetch(`http://localhost:8080/api/books/search?isbn=${encodeURIComponent(isbn)}`);
     
     if (!response.ok) {
       console.warn(`Book not found for ISBN: ${isbn}`);
       return null;
     }
     
-    const book = await response.json();
-    return book;
+    const books = await response.json();
+    
+    // API returns an array, get the first book
+    if (books && books.length > 0) {
+      return books[0];
+    }
+    
+    return null;
     
   } catch (error) {
     console.error(`Error fetching book ${isbn}:`, error);
@@ -124,7 +130,6 @@ async function displayOrders(orders) {
         <span class="order-status">${order.status || 'Pending'}</span>
       </div>
       <div class="order-details">
-        <p><strong>Customer:</strong> ${order.customerName || order.username || 'N/A'}</p>
         <p><strong>Date:</strong> ${orderDate}</p>
       </div>
       <div class="book-info">
