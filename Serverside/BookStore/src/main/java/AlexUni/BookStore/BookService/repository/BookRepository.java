@@ -95,7 +95,7 @@ public class BookRepository {
       String author,
       String publisher) { // this does everything
     String sqlString =
-        "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS"
+        "SELECT b.*, p.pub_name, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS"
             + " author_list FROM book b NATURAL JOIN publisher p NATURAL JOIN authored_by ab"
             + " NATURAL JOIN author a WHERE b.isbn IN (SELECT ab2.isbn FROM book b2 NATURAL JOIN"
             + " publisher p2 NATURAL JOIN authored_by ab2 NATURAL JOIN author a2 WHERE p2.pub_name"
@@ -130,7 +130,8 @@ public class BookRepository {
         book.getCategory(),
         book.getThresholdQuantity(),
         book.getQuantityInStock(),
-        book.getPublisherId());
+        book.getPublisherId(),
+        book.getImgPath());
   }
 
   public int update(Book book) {
