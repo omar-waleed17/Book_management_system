@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ketaby Book Store</title>
+    <link rel="stylesheet" href="../css/books.css" />
+  </head>
+  <body>
+    <script>
+      // Check authentication before page loads
+      if (
+        localStorage.getItem("isLoggedIn") !== "true" ||
+        localStorage.getItem("role")?.toUpperCase() !== "ADMIN") {
+        window.location.href = "../index.html";
+      }
+    </script>
+
+    <div class="books-container">
+      <h1>Ketaby Book Store</h1>
+
+      <div class="controls-top">
+        <div class="search-bar">
+          <input type="text" id="titleSearch" placeholder="Search by Title" />
+          <button id="searchBtn">Search</button>
+        </div>
+
+        <div class="filters-grid">
+          <input type="text" id="isbnSearch" placeholder="Search by ISBN" />
+
+          <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="Science">Science</option>
+            <option value="Art">Art</option>
+            <option value="Religion">Religion</option>
+            <option value="History">History</option>
+            <option value="Geography">Geography</option>
+          </select>
+
+          <input type="text" id="authorSearch" placeholder="Search by Author" />
+
+          <input
+            type="text"
+            id="publisherSearch"
+            placeholder="Search by Publisher"
+          />
+        </div>
+      </div>
+
+      <!-- Books grid -->
+      <div id="booksList" class="books-list"></div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn prev">&laquo; Prev</button>
+        <span class="page-info">Page 0 of 0</span>
+        <button class="page-btn next">Next &raquo;</button>
+      </div>
+    </div>
+    <script src="../js/token.js"></script>
+    <script src="../js/adminBooks.js"></script>
+  </body>
+</html>

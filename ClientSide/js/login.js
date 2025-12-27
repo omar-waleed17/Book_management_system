@@ -62,66 +62,20 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     localStorage.setItem("role", data.role);
     localStorage.setItem("isLoggedIn", "true");
 
-    // Clear saved form data
-    sessionStorage.removeItem("loginFormData");
 
-    // ✅ CHECK IF WE SHOULD CREATE CART
-    // We'll create cart ONLY if it's the user's first login in this session
-    // We use localStorage to track if cart was already created
-    
+
+    // Clear saved form data
+    sessionStorage.removeItem('loginFormData');
+    alert("Login successful via backend! Welcome " + data.username);
+    sessionStorage.removeItem('loginFormData');
+     if (localStorage.getItem("role").toLowerCase() === "admin") {
+      window.location.href = "../Pages/admindashboard.html";
+     }
+
+    // ✅ Check role in UPPERCASE (backend returns "CUSTOMER"/"ADMIN")
     if (data.role === "CUSTOMER") {
-      try {
-        const cartCreatedKey = `cartCreated_${data.username}`;
-        const cartAlreadyCreated = localStorage.getItem(cartCreatedKey) === "true";
-        
-        console.log(`🛒 Cart check for ${data.username}:`, cartAlreadyCreated ? 'Already created' : 'Need to create');
-        
-        if (!cartAlreadyCreated) {
-          console.log("🛒 Creating new cart for customer...");
-          
-          const cartResponse = await fetch('http://localhost:8080/api/customer/cart', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${data.accessToken}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          console.log('Cart creation response status:', cartResponse.status);
-          
-          if (cartResponse.ok) {
-            console.log('✅ Cart created successfully');
-            // Mark cart as created for this user
-            localStorage.setItem(cartCreatedKey, "true");
-          } else if (cartResponse.status === 409) {
-            console.log('🔁 Cart already exists in database (409)');
-            // Still mark as created since it exists
-            localStorage.setItem(cartCreatedKey, "true");
-          } else {
-            const errorText = await cartResponse.text();
-            console.warn('⚠️ Cart creation warning:', cartResponse.status, errorText);
-            // Don't mark as created if it failed
-          }
-        } else {
-          console.log('🔄 Cart already marked as created for this user');
-        }
-      } catch (cartError) {
-        console.error('❌ Error with cart check:', cartError);
-        // Don't block login
-      }
-    } else {
-      console.log('👤 User is ADMIN, no cart needed');
-    }
-    
-    alert("Login successful! Welcome " + data.username);
-    
-    // ✅ Redirect based on role
-    console.log(`🔄 Redirecting ${data.role} user...`);
-    if (data.role.toLowerCase() === "admin") {
-      window.location.href = "admindashboard.html";
-    } else {
-      window.location.href = "customerdashboard.html";
-    }
+      window.location.href = "../Pages/customerdashboard.html";
+    } 
     
   } catch (error) {
     console.error("❌ Login failed:", error);

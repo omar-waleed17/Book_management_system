@@ -1,70 +1,112 @@
 USE bookstore;
 
--- 1. Publishers
-INSERT INTO publisher (pub_name, address, pub_phone_num) VALUES 
-('TechPress', '123 Tech Street, Silicon Valley, CA', '555-0101'),
-('HistoryHouse', '456 Old Road, London, UK', '555-0102'),
-('NovelPress', '789 Story Lane, New York, NY', '555-0103'),
-('ScienceDirect', '101 Lab Ave, Boston, MA', '555-0104'),
-('GeoWorld', '202 Map St, Sydney, AU', '555-0105');
+-- ============================================
+-- TEST DATA IN TOPOLOGICAL ORDER
+-- Dependencies resolved from schema diagram
+-- ============================================
 
--- 2. Authors
-INSERT INTO author (name) VALUES 
-('Jane Doe'),
-('John Smith'),
-('Alice Brown'),
-('David Green'),
-('Robert Clean Code');
+-- 1. AUTHORS (no dependencies)
+INSERT INTO author (fname, lname) VALUES
+('J.K.', 'Rowling'),
+('George', 'Orwell'),
+('Harper', 'Lee'),
+('F. Scott', 'Fitzgerald'),
+('Jane', 'Austen'),
+('Mark', 'Twain'),
+('Ernest', 'Hemingway'),
+('Agatha', 'Christie');
 
--- 3. Books
--- Categories: 'Science', 'Art', 'Religion', 'History', 'Geography'
-INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold, quantity, pub_id, img_path) VALUES 
-('9781234567890', 'The Art of Coding', 2022, 29.99, 'Science', 10, 50, 1, '../images/bookcover.jpg'),
-('9782345678901', 'History of Alexandria', 2021, 19.99, 'History', 5, 20, 2, '../images/bookcover2.jpg'),
-('9783456789012', 'Fictional Dreams', 2020, 14.99, 'Art', 8, 15, 3, '../images/bookcover3.jpg'),
-('9784567890123', 'Advanced Physics', 2023, 49.99, 'Science', 12, 30, 4, '../images/bookcover4.jpg'),
-('9785678901234', 'World Geography', 2019, 24.99, 'Geography', 10, 25, 5, '../images/bookcover5.jpg'),
-('9786789012345', 'Modern Religion', 2021, 18.50, 'Religion', 5, 40, 3, '../images/bookcover6.jpg');
+-- 2. PUBLISHERS (no dependencies)
+INSERT INTO publisher (pub_name, address, pub_phone_num) VALUES
+('Bloomsbury Publishing', '50 Bedford Square, London', '+44-20-7631-5600'),
+('Penguin Books', '80 Strand, London', '+44-20-7010-3000'),
+('HarperCollins', '195 Broadway, New York', '+1-212-207-7000'),
+('Simon & Schuster', '1230 Avenue of the Americas, New York', '+1-212-698-7000'),
+('Random House', '1745 Broadway, New York', '+1-212-782-9000');
 
--- 4. Authored_By
-INSERT INTO authored_by (isbn, author_id) VALUES 
-('9781234567890', 1), -- Jane Doe wrote The Art of Coding
-('9782345678901', 2),
-('9783456789012', 3),
-('9784567890123', 4),
-('9785678901234', 1),
-('9786789012345', 5);
+-- 3. USERS (no dependencies)
+-- Password: 'admin123' and 'customer123' (BCrypt hashed)
+INSERT INTO users (username, hashed_password, email, fname, lname, phone_num, shipping_address, role) VALUES
+('admin', '$2a$10$X5wFuQoqRq5YwZ9Q2J9K.OqC7jKjKZ7Yh4wJ5K6Z7Yh4wJ5K6Z7Yh4', 'admin@bookstore.com', 'Admin', 'User', '123-456-7890', '123 Admin St, Admin City', 'ADMIN'),
+('john_doe', '$2a$10$ngWtkKZ8IH7Zzw.9io9dCuY3eULKf6toF2i6w3krAC6MvvXdWgorG', 'john@email.com', 'John', 'Doe', '234-567-8901', '456 Oak Ave, Springfield', 'CUSTOMER'),
+('jane_smith', '$2a$10$Z7yHwSqrTs7AyB1S4L1M.QsE9mMmMB9Aj6yL8M9B1Aj6yL8M9B1Aj6', 'jane@email.com', 'Jane', 'Smith', '345-678-9012', '789 Maple Dr, Riverside', 'CUSTOMER'),
+('bob_wilson', '$2a$10$A8zIxTrsUt8BzC2T5M2N.RtF0nNnNC0Bk7zM9N0C2Bk7zM9N0C2Bk7', 'bob@email.com', 'Bob', 'Wilson', '456-789-0123', '321 Pine Rd, Lakeside', 'CUSTOMER');
 
--- 5. Users
--- Passwords are minimal placeholders. In a real app, these should be BCrypt hashes.
--- 'password123' hashed with BCrypt (cost 10) -> $2a$10$Dow.Q/L/yA5s0.tr1.bK.e.8A.A.X.X.X.X.X.X.X (This is just an example, might need real generation)
--- For now, using a potential placeholder or allowing the app to handle registration.
--- Assuming the app might have a way to handle this, or user can update it. 
--- Role: 'ADMIN', 'CUSTOMER'
+-- 4. BOOKS (depends on publisher)
+INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold, quantity, pub_id, img_path) VALUES
+('978-0-7475-3269-9', 'Harry Potter and the Philosopher''s Stone', 1997, 29.99, 'Fantasy', 10, 50, 1, '../images/harry_potter_1.jpg'),
+('978-0-452-28423-4', '1984', 1949, 19.99, 'Science Fiction', 15, 75, 2, '../images/1984.jpg'),
+('978-0-06-112008-4', 'To Kill a Mockingbird', 1960, 24.99, 'Classic Fiction', 12, 60, 3, '../images/mockingbird.jpg'),
+('978-0-7432-7356-5', 'The Great Gatsby', 1925, 22.99, 'Classic Fiction', 10, 45, 4, '../images/gatsby.jpg'),
+('978-0-14-143951-8', 'Pride and Prejudice', 1813, 18.99, 'Romance', 15, 80, 2, '../images/pride_prejudice.jpg'),
+('978-0-486-40077-6', 'Adventures of Huckleberry Finn', 1884, 21.99, 'Adventure', 10, 55, 5, '../images/huck_finn.jpg'),
+('978-0-684-80122-3', 'The Old Man and the Sea', 1952, 16.99, 'Classic Fiction', 12, 70, 4, '../images/old_man_sea.jpg'),
+('978-0-06-207348-8', 'Murder on the Orient Express', 1934, 23.99, 'Mystery', 10, 40, 3, '../images/orient_express.jpg');
 
-INSERT INTO users (username, hashed_password, email, fname, lname, phone_num, shipping_address, role) VALUES 
-('adminUser', '$2a$10$ngWtkKZ8IH7Zzw.9io9dCuY3eULKf6toF2i6w3krAC6MvvXdWgorG', 'admin@bookstore.com', 'Admin', 'User', '1234567890', 'Admin HQ', 'ADMIN'),
-('customerOne', '$2a$10$ngWtkKZ8IH7Zzw.9io9dCuY3eULKf6toF2i6w3krAC6MvvXdWgorG', 'customer@gmail.com', 'John', 'Doe', '0987654321', '123 Customer Lane', 'CUSTOMER');
+-- 5. AUTHORED_BY (depends on author and book)
+INSERT INTO authored_by (isbn, author_id) VALUES
+('978-0-7475-3269-9', 1),
+('978-0-452-28423-4', 2),
+('978-0-06-112008-4', 3),
+('978-0-7432-7356-5', 4),
+('978-0-14-143951-8', 5),
+('978-0-486-40077-6', 6),
+('978-0-684-80122-3', 7),
+('978-0-06-207348-8', 8);
 
--- 6. Shopping Cart (One per user)
-INSERT INTO shopping_cart (user_id) VALUES 
-(1), -- Admin's cart (though admins usually don't buy)
-(2); -- Customer's cart
+-- 6. REFRESH_TOKENS (depends on users) - OPTIONAL for testing
+-- Note: These are sample tokens, real tokens should be generated by authentication service
+-- INSERT INTO refresh_tokens (token, expiry_date, user_id) VALUES
+-- ('sample_refresh_token_admin', DATE_ADD(NOW(), INTERVAL 7 DAY), 1),
+-- ('sample_refresh_token_john', DATE_ADD(NOW(), INTERVAL 7 DAY), 2);
 
--- 7. Cart Details
-INSERT INTO cart_details (cart_id, isbn, quantity) VALUES 
-(2, '9781234567890', 1),
-(2, '9785678901234', 2);
+-- 7. SHOPPING_CART (depends on users)
+INSERT INTO shopping_cart (user_id) VALUES
+(2),
+(3),
+(4);
 
--- 8. Orders
-INSERT INTO orders (order_date, total_price, credit_card_number, cc_expiry_date, user_id) VALUES 
-(NOW(), 79.97, '1234567812345678', '2025-12-31', 2);
+-- 8. ORDERS (depends on users)
+INSERT INTO orders (order_date, total_price, credit_card_number, cc_expiry_date, user_id) VALUES
+('2024-12-01 10:30:00', 52.98, '4532123456789012', '2026-12-31', 2),
+('2024-12-05 14:15:00', 44.98, '5412345678901234', '2027-06-30', 3),
+('2024-12-10 09:45:00', 38.98, '3712345678901234', '2026-08-31', 4);
 
--- 9. Order Details
-INSERT INTO order_details (order_id, isbn, quantity, unit_price) VALUES 
-(1, '9781234567890', 1, 29.99),
-(1, '9785678901234', 2, 24.99);
+-- 9. CART_DETAILS (depends on shopping_cart and book)
+INSERT INTO cart_details (cart_id, isbn, quantity) VALUES
+(1, '978-0-7475-3269-9', 1),
+(1, '978-0-452-28423-4', 2),
+(2, '978-0-14-143951-8', 3),
+(2, '978-0-06-112008-4', 1),
+(3, '978-0-684-80122-3', 2),
+(3, '978-0-06-207348-8', 1);
 
--- 10. Restock Orders (Trigger usually handles this, but adding manual one for testing)
-INSERT INTO restock_order (order_date, quantity, status, user_id, isbn) VALUES 
-(NOW(), 50, 'Pending', 1, '9783456789012');
+-- 10. ORDER_DETAILS (depends on orders and book)
+INSERT INTO order_details (order_id, isbn, quantity, unit_price) VALUES
+(1, '978-0-7475-3269-9', 1, 29.99),
+(1, '978-0-452-28423-4', 1, 19.99),
+(2, '978-0-14-143951-8', 2, 18.99),
+(2, '978-0-684-80122-3', 1, 16.99),
+(3, '978-0-06-112008-4', 1, 24.99),
+(3, '978-0-7432-7356-5', 1, 22.99);
+
+-- 11. RESTOCK_ORDER (depends on users and book)
+INSERT INTO restock_order (order_date, quantity, status, user_id, isbn) VALUES
+('2024-11-20 08:00:00', 30, 'COMPLETED', 1, '978-0-7475-3269-9'),
+('2024-11-22 10:30:00', 25, 'COMPLETED', 1, '978-0-452-28423-4'),
+('2024-12-15 14:00:00', 20, 'PENDING', 1, '978-0-06-207348-8'),
+('2024-12-18 09:15:00', 15, 'PENDING', 1, '978-0-7432-7356-5');
+
+-- ============================================
+-- VERIFICATION QUERIES (uncomment to test)
+-- ============================================
+-- SELECT COUNT(*) AS authors FROM author;        -- Should return 8
+-- SELECT COUNT(*) AS publishers FROM publisher;  -- Should return 5
+-- SELECT COUNT(*) AS users FROM users;          -- Should return 4
+-- SELECT COUNT(*) AS books FROM book;           -- Should return 8
+-- SELECT COUNT(*) AS authored_by FROM authored_by; -- Should return 8
+-- SELECT COUNT(*) AS carts FROM shopping_cart;  -- Should return 3
+-- SELECT COUNT(*) AS orders FROM orders;        -- Should return 3
+-- SELECT COUNT(*) AS cart_items FROM cart_details; -- Should return 6
+-- SELECT COUNT(*) AS order_items FROM order_details; -- Should return 6
+-- SELECT COUNT(*) AS restock FROM restock_order; -- Should return 4

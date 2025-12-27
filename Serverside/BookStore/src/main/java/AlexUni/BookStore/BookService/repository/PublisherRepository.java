@@ -46,7 +46,7 @@ public class PublisherRepository {
   }
 
   public boolean exists(Integer publisherId) {
-    String sql = "SELECT COUNT(*) FROM publishers WHERE pub_id= ?";
+    String sql = "SELECT COUNT(*) FROM publisher WHERE pub_id= ?";
     Integer count = jdbcTemplate.queryForObject(sql, Integer.class, publisherId);
     return count != null && count > 0;
   }
