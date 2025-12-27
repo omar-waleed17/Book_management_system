@@ -139,6 +139,9 @@ function displayBooks(bookArray) {
         <p class="book-isbn">🔖 ${book.isbn || 'N/A'}</p>
         <p class="book-price">💰 $${(book.sellingPrice || 0).toFixed(2)}</p>
         <p class="book-stock">📦 ${availableStock} in stock</p>
+        <button class="edit-book-btn" data-isbn="${book.isbn}" onclick="window.location.href='modifyBook.html?isbn=${encodeURIComponent(book.isbn)}'">
+          ✏️ Edit Book
+        </button>
         ${isInCart ? `
           <div class="cart-controls">
             <p class="in-cart">🛒 ${inCartQuantity} in cart</p>
@@ -732,6 +735,30 @@ style.textContent = `
     font-weight: bold;
     min-width: 30px;
     text-align: center;
+  }
+  
+  .edit-book-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #FFA726, #FB8C00);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .edit-book-btn:hover {
+    background: linear-gradient(135deg, #FB8C00, #F57C00);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+  }
+  
+  .edit-book-btn:active {
+    transform: translateY(0);
   }
 `;
 document.head.appendChild(style);
