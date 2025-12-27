@@ -198,9 +198,158 @@ async function deleteCart() {
     }
 }
 
-// Checkout button - does nothing for now
+// Checkout button - opens payment modal
 function checkout() {
-    alert('Checkout functionality is not implemented yet.');
+    if (cartItems.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+    
+    // Show checkout modal
+    const modal = document.getElementById('checkoutModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Close checkout modal
+function closeCheckoutModal() {
+    const modal = document.getElementById('checkoutModal');
+    if (modal) {
+        modal.style.display = 'none';
+        // Clear form
+        document.getElementById('checkoutForm')?.reset();
+    }
+}
+
+// Validate credit card number using Luhn algorithm
+function validateCreditCard(cardNumber) {
+    // Remove spaces and dashes
+    cardNumber = cardNumber.replace(/[\s-]/g, '');
+    
+    // Check if it's all digits and has valid length (13-19 digits)
+    if (!/^\d{13,19}$/.test(cardNumber)) {
+        return false;
+    }
+    
+    // Luhn algorithm
+    let sum = 0;
+    let isEven = false;
+    
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+        let digit = parseInt(cardNumber[i]);
+        
+        if (isEven) {
+            digit *= 2;
+            if (digit > 9) {
+                digit -= 9;
+            }
+        }
+        
+        sum += digit;
+        isEven = !isEven;
+    }
+    
+    return (sum % 10) === 0;
+}
+
+// Validate expiry date (MM/YY format)
+function validateExpiryDate(expiry) {
+    const match = expiry.match(/^(0[1-9]|1[0-2])\/([0-9]{2})$/);
+    if (!match) return false;
+    
+    const month = parseInt(match[1]);
+    const year = parseInt('20' + match[2]);
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        return false;
+    }
+    
+    return true;
+}
+
+// Validate CVV (3 or 4 digits)
+function validateCVV(cvv) {
+    return /^\d{3,4}$/.test(cvv);
+}
+
+// Process checkout
+async function processCheckout(event) {
+    event.preventDefault();
+    
+    const cardNumber = document.getElementById('cardNumber').value;
+    const cardName = document.getElementById('cardName').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+    
+    // Validate all fields
+    if (!cardName || cardName.trim().length < 3) {
+        alert('Please enter a valid cardholder name');
+        return;
+    }
+    
+    if (!validateCreditCard(cardNumber)) {
+        alert('Invalid credit card number');
+        return;
+    }
+    
+    if (!validateExpiryDate(expiryDate)) {
+        alert('Invalid or expired card');
+        return;
+    }
+    
+    if (!validateCVV(cvv)) {
+        alert('Invalid CVV (must be 3 or 4 digits)');
+        return;
+    }
+    
+    // All validations passed, proceed with checkout
+    try {
+        console.log('Processing checkout...');
+        
+        const response = await window.TokenManager.fetchWithAuth(
+            'http://localhost:8080/api/customer/checkout',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cardNumber: cardNumber.replace(/[\s-]/g, ''),
+                    cardHolderName: cardName,
+                    expiryDate: expiryDate,
+                    cvv: cvv
+                })
+            }
+        );
+        
+        if (response && response.ok) {
+            const result = await response.json();
+            console.log('✅ Checkout successful:', result);
+            
+            // Close modal
+            closeCheckoutModal();
+            
+            // Clear cart
+            cartItems = [];
+            displayCartItems();
+            
+            // Show success message
+            alert('Order placed successfully! Thank you for your purchase.');
+            
+            // Optionally redirect to orders page
+            // window.location.href = 'orders.html';
+        } else {
+            const errorData = await response.json().catch(() => ({}));
+            alert('Checkout failed: ' + (errorData.message || 'Please try again'));
+        }
+    } catch (error) {
+        console.error('❌ Checkout error:', error);
+        alert('Checkout failed: ' + error.message);
+    }
 }
 
 // Setup event listeners when page loads
@@ -231,5 +380,17 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('deleteCartBtn')?.addEventListener('click', deleteCart);
     document.getElementById('continueShoppingBtn')?.addEventListener('click', () => {
         window.location.href = 'books.html';
+    });
+    
+    // Setup checkout modal listeners
+    document.getElementById('checkoutForm')?.addEventListener('submit', processCheckout);
+    document.getElementById('cancelCheckout')?.addEventListener('click', closeCheckoutModal);
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('checkoutModal');
+        if (event.target === modal) {
+            closeCheckoutModal();
+        }
     });
 });
