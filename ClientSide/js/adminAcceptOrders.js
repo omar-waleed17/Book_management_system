@@ -37,6 +37,11 @@ async function loadPendingOrders() {
     const orders = await response.json();
     console.log('✅ Loaded orders:', orders);
     
+    // Log first order to see structure
+    if (orders && orders.length > 0) {
+      console.log('📋 Sample order structure:', orders[0]);
+    }
+    
     await displayOrders(orders);
 
   } catch (error) {
@@ -52,15 +57,21 @@ async function loadPendingOrders() {
 // ============================================
 async function fetchBookByISBN(isbn) {
   try {
-    const response = await fetch(`http://localhost:8080/api/books/${isbn}`);
+    const response = await fetch(`http://localhost:8080/api/books/search?isbn=${encodeURIComponent(isbn)}`);
     
     if (!response.ok) {
       console.warn(`Book not found for ISBN: ${isbn}`);
       return null;
     }
     
-    const book = await response.json();
-    return book;
+    const books = await response.json();
+    
+    // API returns an array, get the first book
+    if (books && books.length > 0) {
+      return books[0];
+    }
+    
+    return null;
     
   } catch (error) {
     console.error(`Error fetching book ${isbn}:`, error);
@@ -90,12 +101,20 @@ async function displayOrders(orders) {
 
   // Process each order
   for (const order of orders) {
+    // Get order ID (handle different possible field names)
+    const orderId = order.restockOrderId || order.restock_order_id || order.id || order.orderId;
+    
+    if (!orderId) {
+      console.error('⚠️ Order missing ID:', order);
+      continue;
+    }
+    
     // Fetch book details by ISBN
     const book = await fetchBookByISBN(order.isbn);
     
     const bookTitle = book?.title || order.bookTitle || 'Unknown Title';
     const bookAuthor = book?.authors ? (Array.isArray(book.authors) ? book.authors.join(', ') : book.authors) : 'Unknown Author';
-    const bookImage = book?.imgPath || book?.img_path || '../images/default_book.jpg';
+    const bookImage = book?.imgPath || book?.img_path || '../images/bookcover.jpg';
     const bookPrice = order.totalPrice || (book?.sellingPrice || 0);
     
     // Format date
@@ -103,20 +122,19 @@ async function displayOrders(orders) {
     
     const orderCard = document.createElement('div');
     orderCard.className = 'order-card';
-    orderCard.setAttribute('data-order-id', order.id);
+    orderCard.setAttribute('data-order-id', orderId);
     
     orderCard.innerHTML = `
       <div class="order-header">
-        <h3>Order #${order.id}</h3>
+        <h3>Order #${orderId}</h3>
         <span class="order-status">${order.status || 'Pending'}</span>
       </div>
       <div class="order-details">
-        <p><strong>Customer:</strong> ${order.customerName || order.username || 'N/A'}</p>
         <p><strong>Date:</strong> ${orderDate}</p>
       </div>
       <div class="book-info">
         <div class="book-image">
-          <img src="${bookImage}" alt="${bookTitle}" onerror="this.src='../images/default_book.jpg'">
+          <img src="${bookImage}" alt="${bookTitle}" onerror="this.src='../images/bookcover10.jpg'">
         </div>
         <div class="book-details">
           <h4>Book Details:</h4>
@@ -128,7 +146,7 @@ async function displayOrders(orders) {
         </div>
       </div>
       <div class="order-actions">
-        <button class="confirm-btn" onclick="confirmOrder(${order.id})">Confirm Order</button>
+        <button class="confirm-btn" onclick="confirmOrder(${orderId})">Confirm Order</button>
       </div>
     `;
     
@@ -227,7 +245,7 @@ function showMessage(text, type) {
   }
   
   const colors = {
-    success: '#4CAF50',
+    success: '#4CAF50', 
     error: '#f44336',
     info: '#2196F3'
   };
