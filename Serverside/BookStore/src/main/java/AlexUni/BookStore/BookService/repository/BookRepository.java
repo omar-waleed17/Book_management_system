@@ -43,9 +43,14 @@ public class BookRepository {
   // old
   public Optional<Book> findByIsbn(
       String isbn) { // when returning we wrap the object in a Optional object and unrap at service
-    String sqlString = "SELECT b.*, GROUP_CONCAT(DISTINCT a.name SEPARATOR ', ') AS"
-        + " author_list FROM book b NATURAL JOIN authored_by ab NATURAL JOIN author a WHERE"
-        + " b.isbn = ? GROUP BY b.isbn";
+    String sqlString = 
+        "SELECT b.*, p.pub_name, GROUP_CONCAT(DISTINCT a.name SEPARATOR ', ') AS author_list " +
+        "FROM book b " +
+        "JOIN publisher p ON b.pub_id = p.pub_id " + // Use JOIN instead of NATURAL JOIN for safety
+        "LEFT JOIN authored_by ab ON b.isbn = ab.isbn " +
+        "LEFT JOIN author a ON ab.author_id = a.author_id " +
+        "WHERE b.isbn = ? " +
+        "GROUP BY b.isbn, p.pub_name";
     try {
       Book book = jdbcTemplate.queryForObject(sqlString, bookRowMapper, isbn);
       return Optional.ofNullable(book); // service must handle unwrapping
@@ -71,11 +76,11 @@ public class BookRepository {
   }
 
   public List<Book> findByAuthor(String authorName) { // old
-    String sqlString = "SELECT b.*, GROUP_CONCAT(a.name SEPARATOR ', ') AS author_list FROM"
-        + " book AS b NATURAL JOIN authored_by AS ab NATURAL JOIN author AS a WHERE a.name"
-        + " LIKE ? GROUP BY b.isbn";
+    String sqlString = "SELECT b.*, GROUP_CONCAT(CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list FROM"
+        + " book AS b NATURAL JOIN authored_by AS ab NATURAL JOIN author AS a WHERE a.fname"
+        + " LIKE ? OR a.lname LIKE ? GROUP BY b.isbn";
     String searchPattern = "%" + authorName + "%";
-    return jdbcTemplate.query(sqlString, bookRowMapper, searchPattern);
+    return jdbcTemplate.query(sqlString, bookRowMapper, searchPattern, searchPattern);
   }
 
   public List<Book> findByPublisher(String publisherName) { // old
