@@ -131,7 +131,7 @@ document.querySelector('.book-form').addEventListener('submit', async (e) => {
       window.location.href = "index.html";
       return;
     }
-
+    console.log(localStorage.getItem("role"))
     const response = await fetch("http://localhost:8080/api/admin/books", {
       method: "POST",
       headers: { 
