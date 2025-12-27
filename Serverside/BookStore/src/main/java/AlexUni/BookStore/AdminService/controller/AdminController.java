@@ -92,4 +92,13 @@ public class AdminController {
   public ResponseEntity<?> getTop10SellingBooks() {
     return ResponseEntity.ok(customerOrderRepository.getTop10SellingBooks());
   }
+
+  @GetMapping("/books/{isbn}/order-count")
+  public ResponseEntity<?> getBookOrderCount(@PathVariable String isbn) {
+    int count = bookService.getOrderCountForBook(isbn);
+    Map<String, Object> response = new HashMap<>();
+    response.put("isbn", isbn);
+    response.put("orderCount", count);
+    return ResponseEntity.ok(response);
+  }
 }
