@@ -123,7 +123,7 @@ function displayBooks(bookArray) {
     }
     
     // Handle image
-    const coverImage = book.imgPath || book.img_path || '../images/default_book.jpg';
+    const coverImage = book.imgPath || book.img_path || '../images/bookcover.jpg';
     
     // Check if book is in cart
     const inCartQuantity = cartItems[book.isbn] || 0;
@@ -131,7 +131,7 @@ function displayBooks(bookArray) {
     const availableStock = book.quantityInStock || 0;
     
     card.innerHTML = `
-      <img src="${coverImage}" alt="${book.title}" class="book-cover" onerror="this.src='../images/default_book.jpg'">
+      <img src="${coverImage}" alt="${book.title}" class="book-cover" onerror="this.src='../images/bookcover.jpg'">
       <div class="book-info">
         <h3 class="book-title">${book.title || 'Untitled'}</h3>
         <p class="book-category">📚 ${book.category || 'Unknown'}</p>
