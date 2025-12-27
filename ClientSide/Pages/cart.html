@@ -1,6 +1,92 @@
-<script>
-  // Check authentication before page loads
-  if (localStorage.getItem("isLoggedIn") !== "true") {
-    window.location.href = "../index.html";
-  }
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Bookstore</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/cart.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <span>BookStore</span>
+            </div>
+            <!-- Navigation removed as requested -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="cart-container">
+            <div class="cart-header">
+                <h1 class="cart-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    Your Shopping Cart
+                </h1>
+                <div class="cart-subtitle" id="cartSubtitle">0 items</div>
+            </div>
+
+            <!-- Cart Items -->
+            <div class="cart-items" id="cartList">
+                <!-- Cart items will be dynamically inserted here -->
+            </div>
+
+            <!-- Empty Cart Message -->
+            <div class="empty-cart" id="emptyCart" style="display: none;">
+                <i class="fas fa-shopping-cart fa-4x"></i>
+                <h2>Your cart is empty</h2>
+                <p>Looks like you haven't added any books to your cart yet.</p>
+                <button class="continue-shopping" id="continueShoppingBtn">
+                    <i class="fas fa-book"></i> Browse Books
+                </button>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary" id="cartSummary" style="display: none;">
+                <div class="summary-header">Order Summary</div>
+                <div class="summary-row">
+                    <span class="summary-label">Items (<span id="itemCount">0</span>):</span>
+                    <span class="summary-value" id="subtotalAmount">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Tax (8%):</span>
+                    <span class="summary-value" id="taxAmount">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Shipping:</span>
+                    <span class="summary-value" id="shippingAmount">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total:</span>
+                    <span class="summary-value" id="totalAmount">$0.00</span>
+                </div>
+                
+                <!-- Cart Action Buttons -->
+                <div class="cart-actions">
+                    <button class="action-btn delete-cart-btn" id="deleteCartBtn">
+                        <i class="fas fa-trash-alt"></i> Clear Cart
+                    </button>
+                    <button class="action-btn checkout-btn" id="checkoutBtn">
+                        <i class="fas fa-shopping-cart"></i> Checkout Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 BookStore. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="../js/token.js"></script>
+    <script src="../js/cartservice.js"></script>
+</body>
+</html>
