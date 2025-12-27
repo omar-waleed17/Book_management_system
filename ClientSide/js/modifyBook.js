@@ -35,6 +35,7 @@ async function loadBookData() {
     }
     
     currentBook = books[0];
+    console.log('📚 Loaded book data:', currentBook);
     populateForm(currentBook);
     
   } catch (error) {
@@ -50,6 +51,12 @@ async function loadBookData() {
 function populateForm(book) {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('editBookForm').style.display = 'flex';
+  
+  // Store publisherId for later use
+  currentBook = {
+    ...book,
+    publisherId: book.publisherId || book.publisher_id
+  };
   
   // Populate fields
   document.getElementById('isbn').value = book.isbn || '';
@@ -67,7 +74,7 @@ function populateForm(book) {
   document.getElementById('publisher').value = book.publisher || '';
   document.getElementById('price').value = book.sellingPrice || 0;
   document.getElementById('genre').value = book.category || '';
-  document.getElementById('threshold').value = book.threshold || 0;
+  document.getElementById('threshold').value = book.thresholdQuantity || book.threshold || 0;
   document.getElementById('publicationYear').value = book.publicationYear || '';
   document.getElementById('quantityInStock').value = book.quantityInStock || 0;
   
@@ -78,29 +85,16 @@ function populateForm(book) {
     const img = document.getElementById('currentImage');
     img.src = coverImage;
     img.onerror = function() {
-      this.src = '../images/default_book.jpg';
+      this.src = '../images/bookcover.jpg';
     };
     imgContainer.style.display = 'block';
   }
 }
 
 // ============================================
-// 4. HANDLE FILE INPUT CHANGE
+// 4. INITIALIZE ON DOM LOAD
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
-  const fileInput = document.getElementById('bookImage');
-  const fileName = document.querySelector('.file-name');
-  
-  if (fileInput && fileName) {
-    fileInput.addEventListener('change', function() {
-      if (this.files && this.files.length > 0) {
-        fileName.textContent = this.files[0].name;
-      } else {
-        fileName.textContent = 'No file chosen';
-      }
-    });
-  }
-  
   // Load book data on page load
   loadBookData();
   
@@ -125,24 +119,48 @@ function setupFormSubmit() {
       return;
     }
     
-    const formData = new FormData();
+    // Get ISBN for URL
+    const isbn = document.getElementById('isbn').value.trim();
     
-    // Add form fields
-    formData.append('isbn', document.getElementById('isbn').value.trim());
-    formData.append('title', document.getElementById('bookName').value.trim());
-    formData.append('authors', document.getElementById('author').value.trim());
-    formData.append('publisher', document.getElementById('publisher').value.trim());
-    formData.append('sellingPrice', parseFloat(document.getElementById('price').value));
-    formData.append('category', document.getElementById('genre').value);
-    formData.append('threshold', parseInt(document.getElementById('threshold').value));
-    formData.append('publicationYear', parseInt(document.getElementById('publicationYear').value));
-    formData.append('quantityInStock', parseInt(document.getElementById('quantityInStock').value));
+    // Parse authors (comma-separated string to array)
+    const authorsStr = document.getElementById('author').value.trim();
+    const authorsArray = authorsStr.split(',').map(a => a.trim()).filter(a => a.length > 0);
     
-    // Add image if changed
-    const imageFile = document.getElementById('bookImage').files[0];
-    if (imageFile) {
-      formData.append('image', imageFile);
+    if (authorsArray.length === 0) {
+      alert('At least one author is required');
+      return;
     }
+    
+    // Validate ISBN format (must be 13 digits)
+    if (!/^\d{13}$/.test(isbn)) {
+      alert(`Invalid ISBN format: "${isbn}"\nISBN must be exactly 13 digits.`);
+      return;
+    }
+    
+    // Validate publisherId exists
+    if (!currentBook.publisherId) {
+      alert('Publisher ID is missing. Cannot update book.');
+      return;
+    }
+    
+    // Build request body matching BookRequest DTO
+    const requestBody = {
+      isbn: isbn,
+      title: document.getElementById('bookName').value.trim(),
+      publisherId: currentBook.publisherId,
+      publicationYear: parseInt(document.getElementById('publicationYear').value),
+      sellingPrice: parseFloat(document.getElementById('price').value),
+      category: document.getElementById('genre').value,
+      quantityInStock: parseInt(document.getElementById('quantityInStock').value),
+      thresholdQuantity: parseInt(document.getElementById('threshold').value),
+      authors: authorsArray
+    };
+    
+    // Log request for debugging
+    console.log('📤 Sending update request:', {
+      url: `http://localhost:8080/api/admin/books/${isbn}`,
+      body: requestBody
+    });
     
     try {
       const submitBtn = form.querySelector('.book-btn');
@@ -150,11 +168,13 @@ function setupFormSubmit() {
       submitBtn.textContent = '💾 Saving...';
       
       const response = await window.TokenManager.fetchWithAuth(
-        'http://localhost:8080/api/admin/books',
+        `http://localhost:8080/api/admin/books/${encodeURIComponent(isbn)}`,
         {
           method: 'PUT',
-          body: formData,
-          headers: {} // Don't set Content-Type, let browser set it with boundary
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
         }
       );
       
@@ -162,8 +182,9 @@ function setupFormSubmit() {
         alert('✅ Book updated successfully!');
         window.location.href = 'AdminBooks.html';
       } else {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to update book');
+        const errorData = await response.json();
+        console.error('❌ Server error response:', errorData);
+        throw new Error(errorData.message || 'Failed to update book');
       }
       
     } catch (error) {
