@@ -264,39 +264,64 @@ async function displayBookOrderHistory() {
 
   try {
     const token = localStorage.getItem("accessToken");
-    const response = await fetch(`http://localhost:8080/api/admin/books/${encodeURIComponent(isbn)}/order-count`, {
+    
+    // First, fetch book details using search endpoint
+    const bookResponse = await fetch(`http://localhost:8080/api/books/search?isbn=${encodeURIComponent(isbn)}`);
+    
+    if (!bookResponse.ok) {
+      throw new Error('Book not found');
+    }
+
+    const books = await bookResponse.json();
+    if (!books || books.length === 0) {
+      resultsContent.innerHTML = '<div class="error">No book found with this ISBN.</div>';
+      return;
+    }
+
+    const book = books[0];
+    console.log('Book data:', book); // Debug log to see book structure
+
+    // Then, fetch order count
+    const orderResponse = await fetch(`http://localhost:8080/api/admin/books/${encodeURIComponent(isbn)}/order-count`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
 
-    if (!response.ok) {
+    if (!orderResponse.ok) {
       let errorMessage = 'Failed to fetch book order history';
       try {
-        const errorData = await response.json();
+        const errorData = await orderResponse.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
       } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = `Error ${response.status}: ${response.statusText}`;
+        errorMessage = `Error ${orderResponse.status}: ${orderResponse.statusText}`;
       }
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-
+    const orderData = await orderResponse.json();
+    
     resultsContent.innerHTML = `
-        <h3>Order History: ISBN ${isbn}</h3>
+        <h3>Order History for "${book.title}"</h3>
         <div class="stat-box">
-          <p class="stat-label">Book Title</p>
-          <p class="stat-value">${data.title || 'N/A'}</p>
+          <p class="stat-label">ISBN</p>
+          <p class="stat-value">${book.isbn}</p>
         </div>
         <div class="stat-box">
-          <p class="stat-label">Total Times Ordered</p>
-          <p class="stat-value">${data.orderCount || 0} Times</p>
+          <p class="stat-label">Author(s)</p>
+          <p class="stat-value">${book.authors || book.author || 'N/A'}</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Publisher</p>
+          <p class="stat-value">${book.publisherName || book.publisher || 'N/A'}</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Total Times Ordered (Replenishment)</p>
+          <p class="stat-value">${orderData.orderCount || 0} Times</p>
         </div>
         <div class="stat-box">
           <p class="stat-label">Total Copies Ordered</p>
-          <p class="stat-value">${data.totalQuantity || 0} Copies</p>
+          <p class="stat-value">${orderData.totalQuantity || 0} Copies</p>
         </div>
       `;
   } catch (error) {
