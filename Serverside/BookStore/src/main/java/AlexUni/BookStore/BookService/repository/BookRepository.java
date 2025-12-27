@@ -90,13 +90,14 @@ public class BookRepository {
       String title,
       String category,
       String author,
-      String publisher) { // this does everything
-    String sqlString = "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS"
-        + " author_list FROM book b NATURAL JOIN publisher p NATURAL JOIN authored_by ab"
-        + " NATURAL JOIN author a WHERE b.isbn IN (SELECT ab2.isbn FROM book b2 NATURAL JOIN"
-        + " publisher p2 NATURAL JOIN authored_by ab2 NATURAL JOIN author a2 WHERE p2.pub_name"
-        + " LIKE ? AND (a2.fname LIKE ? OR a2.lname LIKE ?) AND b2.title LIKE ? AND b2.category"
-        + " LIKE ? AND b2.isbn LIKE ?) GROUP BY b.isbn";
+      String publisher) { // this does everything ///
+    String sqlString =
+        "SELECT b.*, p.pub_name, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS"
+            + " author_list FROM book b NATURAL JOIN publisher p NATURAL JOIN authored_by ab"
+            + " NATURAL JOIN author a WHERE b.isbn IN (SELECT ab2.isbn FROM book b2 NATURAL JOIN"
+            + " publisher p2 NATURAL JOIN authored_by ab2 NATURAL JOIN author a2 WHERE p2.pub_name"
+            + " LIKE ? AND (a2.fname LIKE ? OR a2.lname LIKE ?) AND b2.title LIKE ? AND b2.category"
+            + " LIKE ? AND b2.isbn LIKE ?) GROUP BY b.isbn";
     String searchPatternPublisher = "%" + publisher + "%";
     String searchPatternAuthor = "%" + author + "%";
     String searchPatternTitle = "%" + title + "%";
@@ -125,7 +126,8 @@ public class BookRepository {
         book.getCategory(),
         book.getThresholdQuantity(),
         book.getQuantityInStock(),
-        book.getPublisherId());
+        book.getPublisherId(),
+        book.getImgPath());
   }
 
   public int update(Book book) {
