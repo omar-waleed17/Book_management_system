@@ -93,7 +93,7 @@ public class BookRepository {
       String title,
       String category,
       String author,
-      String publisher) { // this does everything
+      String publisher) { // this does everything ///
     String sqlString =
         "SELECT b.*, p.pub_name, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS"
             + " author_list FROM book b NATURAL JOIN publisher p NATURAL JOIN authored_by ab"
