@@ -6,6 +6,7 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     password: e.target.password.value.trim(),
   };
 
+  // OPTION 1: Backend API
   try {
     const response = await fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
@@ -19,6 +20,17 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     }
 
     const data = await response.json();
+    console.log("Backend response:", data);
+
+    if (!response.ok) {
+      // 401 means wrong credentials, not server error
+      if (response.status === 401) {
+        alert(data.message || "Invalid username or password");
+        return;
+        1; // Stop here, don't fall back to LocalStorage
+      }
+      throw new Error("Backend server error");
+    }
 
     // ✅ Save tokens EXACTLY as token.js expects - NO CHANGES HERE!
     localStorage.setItem("accessToken", data.accessToken);
@@ -26,6 +38,8 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     localStorage.setItem("username", data.username);
     localStorage.setItem("role", data.role);  // "CUSTOMER" or "ADMIN" 
     localStorage.setItem("isLoggedIn", "true");
+
+    sessionStorage.removeItem("loginFormData");
 
     // Clear saved form data
     sessionStorage.removeItem('loginFormData');
