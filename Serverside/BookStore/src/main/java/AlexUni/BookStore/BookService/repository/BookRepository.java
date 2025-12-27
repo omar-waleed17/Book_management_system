@@ -17,36 +17,35 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class BookRepository {
-  @Autowired private JdbcTemplate jdbcTemplate;
+  @Autowired
+  private JdbcTemplate jdbcTemplate;
 
-  private final RowMapper<Book>
-      bookRowMapper = // row mapper class to map row elemnts into a book class
+  private final RowMapper<Book> bookRowMapper = // row mapper class to map row elemnts into a book class
       new RowMapper<Book>() {
-            @Override
-            public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-              Book book = new Book();
-              book.setIsbn(rs.getString("isbn"));
-              book.setTitle(rs.getString("title"));
-              book.setCategory(rs.getString("category"));
-              book.setSellingPrice(rs.getDouble("selling_price"));
-              book.setQuantityInStock(rs.getInt("quantity"));
-              book.setThresholdQuantity(rs.getInt("threshold"));
-              book.setPublicationYear(rs.getInt("publication_year"));
-              book.setPublisherId(rs.getInt("pub_id"));
-              book.setPublisherName(rs.getString("pub_name"));
-              book.setImgPath(rs.getString("img_path"));
-              book.setAuthors(Arrays.asList(rs.getString("author_list").split(", ")));
-              return book;
-            }
-          };
+        @Override
+        public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
+          Book book = new Book();
+          book.setIsbn(rs.getString("isbn"));
+          book.setTitle(rs.getString("title"));
+          book.setCategory(rs.getString("category"));
+          book.setSellingPrice(rs.getDouble("selling_price"));
+          book.setQuantityInStock(rs.getInt("quantity"));
+          book.setThresholdQuantity(rs.getInt("threshold"));
+          book.setPublicationYear(rs.getInt("publication_year"));
+          book.setPublisherId(rs.getInt("pub_id"));
+          book.setPublisherName(rs.getString("pub_name"));
+          book.setImgPath(rs.getString("img_path"));
+          book.setAuthors(Arrays.asList(rs.getString("author_list").split(", ")));
+          return book;
+        }
+      };
 
   // old
   public Optional<Book> findByIsbn(
       String isbn) { // when returning we wrap the object in a Optional object and unrap at service
-    String sqlString =
-        "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS"
-            + " author_list FROM book b NATURAL JOIN authored_by ab NATURAL JOIN author a WHERE"
-            + " b.isbn = ? GROUP BY b.isbn";
+    String sqlString = "SELECT b.*, GROUP_CONCAT(DISTINCT CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS"
+        + " author_list FROM book b NATURAL JOIN authored_by ab NATURAL JOIN author a WHERE"
+        + " b.isbn = ? GROUP BY b.isbn";
     try {
       Book book = jdbcTemplate.queryForObject(sqlString, bookRowMapper, isbn);
       return Optional.ofNullable(book); // service must handle unwrapping
@@ -72,17 +71,15 @@ public class BookRepository {
   }
 
   public List<Book> findByAuthor(String authorName) { // old
-    String sqlString =
-        "SELECT b.*, GROUP_CONCAT(CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list FROM"
-            + " book AS b NATURAL JOIN authored_by AS ab NATURAL JOIN author AS a WHERE a.fname"
-            + " LIKE ? OR a.lname LIKE ? GROUP BY b.isbn";
+    String sqlString = "SELECT b.*, GROUP_CONCAT(CONCAT(a.fname, ' ', a.lname) SEPARATOR ', ') AS author_list FROM"
+        + " book AS b NATURAL JOIN authored_by AS ab NATURAL JOIN author AS a WHERE a.fname"
+        + " LIKE ? OR a.lname LIKE ? GROUP BY b.isbn";
     String searchPattern = "%" + authorName + "%";
     return jdbcTemplate.query(sqlString, bookRowMapper, searchPattern, searchPattern);
   }
 
   public List<Book> findByPublisher(String publisherName) { // old
-    String sqlString =
-        "SELECT b.* FROM book AS b NATURAL JOIN publisher AS p WHERE p.pub_name LIKE ?";
+    String sqlString = "SELECT b.* FROM book AS b NATURAL JOIN publisher AS p WHERE p.pub_name LIKE ?";
     String searchPattern = "%" + publisherName + "%";
     return jdbcTemplate.query(sqlString, bookRowMapper, searchPattern);
   }
@@ -118,9 +115,8 @@ public class BookRepository {
   }
 
   public int save(Book book) {
-    String sqlString =
-        "INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold,"
-            + " quantity, pub_id, img_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    String sqlString = "INSERT INTO book (isbn, title, publication_year, selling_price, category, threshold,"
+        + " quantity, pub_id, img_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     return jdbcTemplate.update(
         sqlString,
         book.getIsbn(),
@@ -135,9 +131,8 @@ public class BookRepository {
   }
 
   public int update(Book book) {
-    String sqlString =
-        "UPDATE book SET title = ?, publication_year = ?, selling_price = ?, category = ?,"
-            + " threshold = ?, quantity = ?, pub_id = ?, img_path = ? WHERE isbn = ?";
+    String sqlString = "UPDATE book SET title = ?, publication_year = ?, selling_price = ?, category = ?,"
+        + " threshold = ?, quantity = ?, pub_id = ?, img_path = ? WHERE isbn = ?";
     return jdbcTemplate.update(
         sqlString,
         book.getTitle(),
@@ -179,10 +174,9 @@ public class BookRepository {
   }
 
   public List<String> getBookAuthors(String isbn) {
-    String sql =
-        "SELECT a.name FROM author a "
-            + "INNER JOIN authored_by ba ON a.author_id = ba.author_id "
-            + "WHERE ba.isbn = ?";
+    String sql = "SELECT a.name FROM author a "
+        + "INNER JOIN authored_by ba ON a.author_id = ba.author_id "
+        + "WHERE ba.isbn = ?";
     return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("name"), isbn);
   }
 
