@@ -1,10 +1,12 @@
-// profile.js - COMPLETE FILE
+// profile.js - COMPLETE PROFILE MANAGEMENT
 document.addEventListener('DOMContentLoaded', async function() {
   // 1. Check if logged in
   if (!window.TokenManager || !window.TokenManager.isLoggedIn()) {
     window.location.href = "../index.html";
     return;
   }
+  
+  console.log('👤 Profile page loaded');
   
   // 2. Load current profile data
   await loadProfile();
@@ -20,70 +22,94 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // ============================================
-// LOAD PROFILE FROM BACKEND
+// GET PROFILE - GET /api/customer/profile
 // ============================================
 async function loadProfile() {
   try {
-    console.log('🔍 Loading profile...');
+    console.log('📥 Loading profile data...');
     
-    // Get username from TokenManager
-    const username = window.TokenManager.getUsername();
-    if (username) {
-      document.getElementById('username').value = username;
-      document.getElementById('username').disabled = true; // Username can't be edited
-    }
-    
-    // Use TokenManager.fetchWithAuth - handles token refresh automatically!
+    // Use TokenManager.fetchWithAuth for authenticated request
     const response = await window.TokenManager.fetchWithAuth(
-      'http://localhost:8080/api/customer/profile'
+      'http://localhost:8080/api/customer/profile',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
     );
+    
+    console.log('Profile GET response status:', response.status);
     
     if (response.ok) {
       const userData = await response.json();
+      console.log('✅ Profile data:', userData);
       
-      // Fill form fields
-      document.getElementById('firstName').value = userData.firstName || '';
-      document.getElementById('lastName').value = userData.lastName || '';
-      document.getElementById('email').value = userData.email || '';
-      document.getElementById('email').disabled = true; // Email can't be edited
-      document.getElementById('phone').value = userData.phoneNumber || '';
-      document.getElementById('address').value = userData.shippingAddress || '';
-      document.getElementById('password').value = ''; // Password field always empty
+      // Fill form fields - adjust these IDs to match your HTML
+      const username = document.getElementById('username');
+      const firstName = document.getElementById('firstName');
+      const lastName = document.getElementById('lastName');
+      const email = document.getElementById('email');
+      const phone = document.getElementById('phone');
+      const address = document.getElementById('address');
+      const password = document.getElementById('password');
       
-      console.log('✅ Profile loaded');
+      if (username) {
+        const storedUsername = window.TokenManager.getUsername();
+        username.value = storedUsername || userData.username || '';
+        username.disabled = true;
+      }
+      
+      if (firstName) firstName.value = userData.firstName || '';
+      if (lastName) lastName.value = userData.lastName || '';
+      if (email) {
+        email.value = userData.email || '';
+        email.disabled = true; // Email usually can't be changed
+      }
+      if (phone) phone.value = userData.phoneNumber || '';
+      if (address) address.value = userData.shippingAddress || '';
+      if (password) password.value = ''; // Always empty for security
+      
+      console.log('✅ Profile loaded successfully');
+      
+    } else if (response.status === 404) {
+      console.log('⚠️ No profile found (first time user)');
+      // Keep form empty - user needs to create profile
+      
     } else {
-      console.log('❌ Failed to load profile');
+      console.error('❌ Failed to load profile:', response.status);
+      const errorText = await response.text();
+      console.error('Error details:', errorText);
       alert('Could not load profile data');
     }
     
   } catch (error) {
     console.error('❌ Error loading profile:', error);
-    alert('Error: ' + error.message);
+    alert('Error loading profile: ' + error.message);
   }
 }
 
 // ============================================
-// UPDATE PROFILE
+// UPDATE PROFILE - PUT /api/customer/profile
 // ============================================
 async function updateProfile() {
   try {
-    console.log('💾 Saving profile...');
+    console.log('💾 Saving profile updates...');
     
-    // Get updated values
+    // Collect form data
     const updatedData = {
-      firstName: document.getElementById('firstName').value.trim(),
-      lastName: document.getElementById('lastName').value.trim(),
-      phoneNumber: document.getElementById('phone').value.trim(),
-      shippingAddress: document.getElementById('address').value.trim(),
-      email: document.getElementById('email').value.trim() // Include email even though disabled
+      firstName: getValue('firstName'),
+      lastName: getValue('lastName'),
+      email: getValue('email'),
+      phoneNumber: getValue('phone') || null,
+      shippingAddress: getValue('address') || null
     };
     
-    // Add password ONLY if user entered something
-    const newPassword = document.getElementById('password').value.trim();
-    if (newPassword) {
-      updatedData.password = newPassword;
+    // Add password only if provided
+    const newPassword = getValue('password');
+    if (newPassword && newPassword.trim()) {
+      updatedData.password = newPassword.trim();
     }
-    // If password empty, don't send password field
     
     // Validate required fields
     if (!updatedData.firstName || !updatedData.lastName || !updatedData.email) {
@@ -91,58 +117,108 @@ async function updateProfile() {
       return;
     }
     
-    // Use TokenManager.fetchWithAuth - handles token refresh automatically!
+    console.log('📤 Sending PUT request with data:', updatedData);
+    
+    // PUT request to update profile
     const response = await window.TokenManager.fetchWithAuth(
       'http://localhost:8080/api/customer/profile',
       {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(updatedData)
       }
     );
     
+    console.log('📥 PUT response status:', response.status);
+    
     if (response.ok) {
       const result = await response.json();
+      console.log('✅ Profile update successful:', result);
       
-      // Clear password field after successful update
-      document.getElementById('password').value = '';
+      // Clear password field
+      const passwordField = document.getElementById('password');
+      if (passwordField) passwordField.value = '';
       
       // Show success message
-      alert('✅ Profile updated successfully!');
+      showMessage('✅ Profile updated successfully!', 'success');
       
-      // Optional: Reload profile to confirm changes
-      console.log('🔄 Reloading profile...');
-      await loadProfile();
+      // Optional: Reload to confirm
+      setTimeout(() => {
+        loadProfile();
+      }, 1000);
       
     } else {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Update failed');
+      // Handle error response
+      let errorMessage = 'Update failed';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || 'Update failed';
+      } catch (e) {
+        const errorText = await response.text();
+        errorMessage = errorText || 'Update failed';
+      }
+      
+      console.error('❌ Update failed:', errorMessage);
+      showMessage('❌ ' + errorMessage, 'error');
     }
     
   } catch (error) {
     console.error('❌ Update error:', error);
-    alert('Update failed: ' + error.message);
+    showMessage('❌ Update failed: ' + error.message, 'error');
   }
 }
 
 // ============================================
-// OPTIONAL: Add some basic validation
+// HELPER FUNCTIONS
 // ============================================
-function setupValidation() {
+function getValue(elementId) {
+  const element = document.getElementById(elementId);
+  return element ? element.value.trim() : '';
+}
+
+function showMessage(text, type) {
+  // Simple message display
+  const message = document.createElement('div');
+  message.textContent = text;
+  message.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+    color: white;
+    border-radius: 5px;
+    z-index: 1000;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  `;
+  document.body.appendChild(message);
+  
+  setTimeout(() => {
+    message.remove();
+  }, 3000);
+}
+
+// ============================================
+// PASSWORD VALIDATION (optional)
+// ============================================
+function setupPasswordValidation() {
   const passwordField = document.getElementById('password');
-  if (passwordField) {
-    // Show password strength hint
-    passwordField.addEventListener('input', function() {
-      const pass = this.value;
-      if (pass.length > 0 && pass.length < 8) {
-        this.style.borderColor = 'orange';
-      } else if (pass.length >= 8) {
-        this.style.borderColor = 'green';
-      } else {
-        this.style.borderColor = '';
-      }
-    });
-  }
+  if (!passwordField) return;
+  
+  passwordField.addEventListener('input', function() {
+    const pass = this.value;
+    if (pass.length > 0 && pass.length < 8) {
+      this.style.borderColor = 'orange';
+    } else if (pass.length >= 8) {
+      this.style.borderColor = 'green';
+    } else {
+      this.style.borderColor = '';
+    }
+  });
 }
 
-// Initialize validation
-setupValidation();
+// Initialize
+setupPasswordValidation();
