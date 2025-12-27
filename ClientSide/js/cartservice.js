@@ -1,4 +1,4 @@
-// cart.js - FINAL WORKING VERSION
+// cart.js - SIMPLE CHECKOUT VERSION
 let cartItems = [];
 
 async function loadCartFromDatabase() {
@@ -182,7 +182,7 @@ async function deleteCart() {
     try {
         const response = await window.TokenManager.fetchWithAuth(
             'http://localhost:8080/api/customer/cart',
-            { method: 'DELETE' }
+            { method: 'POST' }
         );
         
         if (response && response.ok) {
@@ -198,9 +198,45 @@ async function deleteCart() {
     }
 }
 
-// Checkout button - does nothing for now
+// ============================================
+// SIMPLE CHECKOUT - JUST SHOW "OK" ON SUCCESS
+// ============================================
 function checkout() {
-    alert('Checkout functionality is not implemented yet.');
+    if (cartItems.length === 0) {
+        alert('Your cart is empty! Add some items before checkout.');
+        return;
+    }
+    
+    // Simple checkout - just collect card details
+    const cardNumber = prompt("💳 Enter 16-digit card number:");
+    if (!cardNumber) return;
+    
+    // Validate card number
+    const cleanCardNumber = cardNumber.replace(/\s+/g, '');
+    if (!/^\d{16}$/.test(cleanCardNumber)) {
+        alert("❌ Invalid card number. Must be 16 digits.");
+        return;
+    }
+    
+    const cvv = prompt("🔒 Enter 3-digit CVV:");
+    if (!cvv) return;
+    
+    // Validate CVV
+    if (!/^\d{3}$/.test(cvv)) {
+        alert("❌ Invalid CVV. Must be 3 digits.");
+        return;
+    }
+    
+    // Show processing
+    alert("⏳ Processing payment...");
+    
+    // Simulate payment delay
+    setTimeout(() => {
+        // Simple success message
+        alert("✅ Payment successful!");
+        
+        // That's it! No cart clearing, no redirects, just "OK"
+    }, 1500);
 }
 
 // Setup event listeners when page loads
