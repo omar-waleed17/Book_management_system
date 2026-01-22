@@ -35,7 +35,11 @@ public class OrderProcessingRepository {
             order.setTotalAmount(rs.getDouble("total_price"));
             order.setCardNumber(rs.getString("credit_card_number"));
             order.setCardExpiry(rs.getString("cc_expiry_date"));
-            order.setBookIsbns(Arrays.asList(rs.getString("all_isbns").split(", ")));
+            String allIsbns = rs.getString("all_isbns");
+            if (allIsbns == null) {
+                allIsbns = "";
+            }
+            order.setBookIsbns(Arrays.asList(allIsbns.split(", ")));
             return order;
         }
     };
