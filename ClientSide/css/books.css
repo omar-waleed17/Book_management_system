@@ -99,21 +99,21 @@ h1 {
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
   border: 1px solid #e0e0e0;
-  cursor: pointer; 
+  cursor: pointer;
+  position: relative;
 }
 
 
 .book-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+  box-shadow: 0 15px 40px rgba(108, 99, 255, 0.3);
+  border-color: #6c63ff;
 }
 
 
 .book-card:active {
-  transform: scale(0.97);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 
@@ -122,7 +122,9 @@ h1 {
   height: 300px;                
   object-fit: cover;
   border-radius: 15px;
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
+  pointer-events: none; /* Prevents image from interfering with card hover */
+  user-select: none;
 }          
 
 .book-card h3 {

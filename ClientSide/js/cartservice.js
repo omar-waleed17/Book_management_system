@@ -198,9 +198,7 @@ async function deleteCart() {
     }
 }
 
-// ============================================
-// SIMPLE CHECKOUT - JUST SHOW "OK" ON SUCCESS
-// ============================================
+// Checkout button - opens payment modal
 function checkout() {
     if (cartItems.length === 0) {
         alert('Your cart is empty! Add some items before checkout.');
@@ -267,5 +265,17 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('deleteCartBtn')?.addEventListener('click', deleteCart);
     document.getElementById('continueShoppingBtn')?.addEventListener('click', () => {
         window.location.href = 'books.html';
+    });
+    
+    // Setup checkout modal listeners
+    document.getElementById('checkoutForm')?.addEventListener('submit', processCheckout);
+    document.getElementById('cancelCheckout')?.addEventListener('click', closeCheckoutModal);
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('checkoutModal');
+        if (event.target === modal) {
+            closeCheckoutModal();
+        }
     });
 });

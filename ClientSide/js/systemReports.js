@@ -53,7 +53,7 @@ function generateReport(reportType) {
   }, 500);
 }
 
-function displayPreviousMonthSales() {
+async function displayPreviousMonthSales() {
   const resultsContent = document.getElementById("resultsContent");
   const now = new Date();
   const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
@@ -62,24 +62,47 @@ function displayPreviousMonthSales() {
     year: "numeric",
   });
 
-  resultsContent.innerHTML = `
+  // Format date as YYYY-MM-DD for the first day of last month
+  const year = lastMonth.getFullYear();
+  const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
+  const dateStr = `${year}-${month}-01`;
+
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch(`http://localhost:8080/api/admin/reports/sales/date?date=${dateStr}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch sales data');
+    }
+
+    const data = await response.json();
+
+    resultsContent.innerHTML = `
         <h3>Total Sales for ${monthName}</h3>
         <div class="stat-box">
           <p class="stat-label">Total Sales Amount</p>
-          <p class="stat-value">$12,458.75</p>
+          <p class="stat-value">$${data.totalSales?.toFixed(2) || '0.00'}</p>
         </div>
         <div class="stat-box">
           <p class="stat-label">Total Books Sold</p>
-          <p class="stat-value">342 Books</p>
+          <p class="stat-value">${data.totalBooks || 0} Books</p>
         </div>
         <div class="stat-box">
           <p class="stat-label">Total Orders</p>
-          <p class="stat-value">156 Orders</p>
+          <p class="stat-value">${data.totalOrders || 0} Orders</p>
         </div>
       `;
+  } catch (error) {
+    console.error('Error fetching previous month sales:', error);
+    resultsContent.innerHTML = '<div class="error">Failed to load sales data. Please try again.</div>';
+  }
 }
 
-function displaySpecificDaySales() {
+async function displaySpecificDaySales() {
   const dateInput = document.getElementById("salesDate");
   const resultsContent = document.getElementById("resultsContent");
 
@@ -95,27 +118,69 @@ function displaySpecificDaySales() {
     day: "numeric",
   });
 
-  resultsContent.innerHTML = `
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch(`http://localhost:8080/api/admin/reports/sales/date?date=${dateInput.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch sales data');
+    }
+
+    const data = await response.json();
+
+    resultsContent.innerHTML = `
         <h3>Sales Report for ${selectedDate}</h3>
         <div class="stat-box">
           <p class="stat-label">Total Sales Amount</p>
-          <p class="stat-value">$1,247.50</p>
+          <p class="stat-value">$${data.totalSales?.toFixed(2) || '0.00'}</p>
         </div>
         <div class="stat-box">
           <p class="stat-label">Total Books Sold</p>
-          <p class="stat-value">28 Books</p>
+          <p class="stat-value">${data.totalBooks || 0} Books</p>
         </div>
         <div class="stat-box">
           <p class="stat-label">Total Orders</p>
-          <p class="stat-value">15 Orders</p>
+          <p class="stat-value">${data.totalOrders || 0} Orders</p>
         </div>
       `;
+  } catch (error) {
+    console.error('Error fetching sales data:', error);
+    resultsContent.innerHTML = '<div class="error">Failed to load sales data. Please try again.</div>';
+  }
 }
 
-function displayTopCustomers() {
+async function displayTopCustomers() {
   const resultsContent = document.getElementById("resultsContent");
 
-  resultsContent.innerHTML = `
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch('http://localhost:8080/api/admin/reports/top-customers', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch top customers');
+    }
+
+    const customers = await response.json();
+
+    const medals = ['🥇', '🥈', '🥉'];
+    const rows = customers.map((customer, index) => `
+      <tr>
+        <td>${index < 3 ? medals[index] : ''} ${index + 1}</td>
+        <td>${customer.customerName || 'N/A'}</td>
+        <td>$${customer.totalPurchases?.toFixed(2) || '0.00'}</td>
+        <td>${customer.orderCount || 0}</td>
+      </tr>
+    `).join('');
+
+    resultsContent.innerHTML = `
         <h3>Top 5 Customers (Last 3 Months)</h3>
         <table class="results-table">
           <thead>
@@ -127,45 +192,43 @@ function displayTopCustomers() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>🥇 1</td>
-              <td>John Doe</td>
-              <td>$2,845.50</td>
-              <td>42</td>
-            </tr>
-            <tr>
-              <td>🥈 2</td>
-              <td>Jane Smith</td>
-              <td>$2,156.75</td>
-              <td>35</td>
-            </tr>
-            <tr>
-              <td>🥉 3</td>
-              <td>Michael Brown</td>
-              <td>$1,892.30</td>
-              <td>28</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Sarah Johnson</td>
-              <td>$1,647.25</td>
-              <td>24</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>David Wilson</td>
-              <td>$1,423.80</td>
-              <td>21</td>
-            </tr>
+            ${rows || '<tr><td colspan="4">No customer data available</td></tr>'}
           </tbody>
         </table>
       `;
+  } catch (error) {
+    console.error('Error fetching top customers:', error);
+    resultsContent.innerHTML = '<div class="error">Failed to load customer data. Please try again.</div>';
+  }
 }
 
-function displayTopBooks() {
+async function displayTopBooks() {
   const resultsContent = document.getElementById("resultsContent");
 
-  resultsContent.innerHTML = `
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch('http://localhost:8080/api/admin/reports/top-books', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch top books');
+    }
+
+    const books = await response.json();
+
+    const rows = books.map((book, index) => `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${book.title || 'N/A'}</td>
+        <td>${book.author || 'N/A'}</td>
+        <td>${book.copiesSold || 0}</td>
+      </tr>
+    `).join('');
+
+    resultsContent.innerHTML = `
         <h3>Top 10 Selling Books (Last 3 Months)</h3>
         <table class="results-table">
           <thead>
@@ -177,96 +240,94 @@ function displayTopBooks() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>The Great Gatsby</td>
-              <td>F. Scott Fitzgerald</td>
-              <td>124</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>To Kill a Mockingbird</td>
-              <td>Harper Lee</td>
-              <td>108</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>1984</td>
-              <td>George Orwell</td>
-              <td>98</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Pride and Prejudice</td>
-              <td>Jane Austen</td>
-              <td>87</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>Harry Potter</td>
-              <td>J.K. Rowling</td>
-              <td>82</td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td>The Catcher in the Rye</td>
-              <td>J.D. Salinger</td>
-              <td>76</td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td>The Hobbit</td>
-              <td>J.R.R. Tolkien</td>
-              <td>71</td>
-            </tr>
-            <tr>
-              <td>8</td>
-              <td>Animal Farm</td>
-              <td>George Orwell</td>
-              <td>65</td>
-            </tr>
-            <tr>
-              <td>9</td>
-              <td>Lord of the Flies</td>
-              <td>William Golding</td>
-              <td>58</td>
-            </tr>
-            <tr>
-              <td>10</td>
-              <td>Brave New World</td>
-              <td>Aldous Huxley</td>
-              <td>52</td>
-            </tr>
+            ${rows || '<tr><td colspan="4">No book data available</td></tr>'}
           </tbody>
         </table>
       `;
+  } catch (error) {
+    console.error('Error fetching top books:', error);
+    resultsContent.innerHTML = '<div class="error">Failed to load book data. Please try again.</div>';
+  }
 }
 
-function displayBookOrderHistory() {
-  const bookInput = document.getElementById("bookId");
+async function displayBookOrderHistory() {
+  const bookInput = document.getElementById("bookIsbn");
   const resultsContent = document.getElementById("resultsContent");
 
   if (!bookInput.value) {
     resultsContent.innerHTML =
-      '<div class="error">Please enter a book ID or title first.</div>';
+      '<div class="error">Please enter a book ISBN first.</div>';
     return;
   }
 
-  resultsContent.innerHTML = `
-        <h3>Order History: "${bookInput.value}"</h3>
+  const isbn = bookInput.value.trim();
+
+  try {
+    const token = localStorage.getItem("accessToken");
+    
+    // First, fetch book details using search endpoint
+    const bookResponse = await fetch(`http://localhost:8080/api/books/search?isbn=${encodeURIComponent(isbn)}`);
+    
+    if (!bookResponse.ok) {
+      throw new Error('Book not found');
+    }
+
+    const books = await bookResponse.json();
+    if (!books || books.length === 0) {
+      resultsContent.innerHTML = '<div class="error">No book found with this ISBN.</div>';
+      return;
+    }
+
+    const book = books[0];
+    console.log('Book data:', book); // Debug log to see book structure
+
+    // Then, fetch order count
+    const orderResponse = await fetch(`http://localhost:8080/api/admin/books/${encodeURIComponent(isbn)}/order-count`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!orderResponse.ok) {
+      let errorMessage = 'Failed to fetch book order history';
+      try {
+        const errorData = await orderResponse.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch (e) {
+        errorMessage = `Error ${orderResponse.status}: ${orderResponse.statusText}`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    const orderData = await orderResponse.json();
+    
+    resultsContent.innerHTML = `
+        <h3>Order History for "${book.title}"</h3>
         <div class="stat-box">
-          <p class="stat-label">Total Times Ordered</p>
-          <p class="stat-value">47 Times</p>
+          <p class="stat-label">ISBN</p>
+          <p class="stat-value">${book.isbn}</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Author(s)</p>
+          <p class="stat-value">${book.authors || book.author || 'N/A'}</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Publisher</p>
+          <p class="stat-value">${book.publisherName || book.publisher || 'N/A'}</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Total Times Ordered (Replenishment)</p>
+          <p class="stat-value">${orderData.orderCount || 0} Times</p>
         </div>
         <div class="stat-box">
           <p class="stat-label">Total Copies Ordered</p>
-          <p class="stat-value">1,245 Copies</p>
-        </div>
-        <div class="stat-box">
-          <p class="stat-label">Last Order Date</p>
-          <p class="stat-value">Dec 20, 2025</p>
+          <p class="stat-value">${orderData.totalQuantity || 0} Copies</p>
         </div>
       `;
+  } catch (error) {
+    console.error('Error fetching book order history:', error);
+    resultsContent.innerHTML = `<div class="error">Failed to load book order history: ${error.message}</div>`;
+  }
 }
 
 function closeResults() {
