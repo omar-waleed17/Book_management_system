@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS bookstore;
+
+create database bookstore;
+
 USE bookstore;
 
 CREATE TABLE publisher (
@@ -9,8 +13,7 @@ CREATE TABLE publisher (
 
 CREATE TABLE author (
   author_id INT PRIMARY KEY AUTO_INCREMENT,
-  fname VARCHAR(50),
-  lname VARCHAR(50)
+  name VARCHAR(50)
 );
 
 CREATE TABLE book (
@@ -60,13 +63,13 @@ CREATE TABLE refresh_tokens (
   token VARCHAR(255) NOT NULL,
   expiry_date DATETIME NOT NULL,
   user_id INT NOT NULL,
-  CONSTRAINT fk_token_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+  CONSTRAINT fk_token_user FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE shopping_cart (
   cart_id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT UNIQUE NOT NULL,
-  CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+  CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE cart_details (
@@ -85,7 +88,7 @@ CREATE TABLE orders (
   credit_card_number VARCHAR(20),
   cc_expiry_date DATE,
   user_id INT NOT NULL,
-  CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+  CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE order_details (
@@ -105,49 +108,58 @@ CREATE TABLE restock_order (
   status VARCHAR(20) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Confirmed')),
   user_id INT,
   isbn VARCHAR(20),
-  CONSTRAINT fk_restock_admin FOREIGN KEY (user_id) REFERENCES users(user_id),
+  CONSTRAINT fk_restock_admin FOREIGN KEY (user_id) REFERENCES users (user_id),
   CONSTRAINT fk_restock_book FOREIGN KEY (isbn) REFERENCES book (isbn)
 );
 
 DELIMITER //
+CREATE TRIGGER prevent_negative_stock BEFORE
+UPDATE ON book FOR EACH ROW BEGIN IF NEW.quantity < 0 THEN SIGNAL SQLSTATE '45000'
+SET
+  MESSAGE_TEXT = 'Error: Stock quantity cannot be negative.';
 
-CREATE TRIGGER prevent_negative_stock BEFORE UPDATE ON book 
-FOR EACH ROW 
-BEGIN 
-  IF NEW.quantity < 0 THEN 
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Error: Stock quantity cannot be negative.';
-  END IF;
+END IF;
+
 END;
-//
 
+//
 DELIMITER ;
 
 DELIMITER //
+CREATE TRIGGER place_restock_order AFTER
+UPDATE ON book FOR EACH ROW BEGIN IF OLD.quantity >= OLD.threshold
+AND NEW.quantity < NEW.threshold THEN
+INSERT INTO
+  restock_order (order_date, quantity, status, isbn, user_id)
+VALUES
+  (
+    NOW (),
+    NEW.threshold * 3,
+    'Pending',
+    NEW.isbn,
+    NULL
+  );
 
-CREATE TRIGGER place_restock_order AFTER UPDATE ON book 
-FOR EACH ROW 
-BEGIN 
-  IF OLD.quantity >= OLD.threshold AND NEW.quantity < NEW.threshold THEN
-    INSERT INTO restock_order (order_date, quantity, status, isbn, user_id)
-    VALUES (NOW(), NEW.threshold * 3, 'Pending', NEW.isbn, NULL);
-  END IF;
+END IF;
+
 END;
-//
 
+//
 DELIMITER ;
 
 DELIMITER //
+CREATE TRIGGER confirm_restock_order AFTER
+UPDATE ON restock_order FOR EACH ROW BEGIN IF NEW.status = 'Confirmed'
+AND OLD.status != 'Confirmed' THEN
+UPDATE book
+SET
+  quantity = quantity + NEW.quantity
+WHERE
+  isbn = NEW.isbn;
 
-CREATE TRIGGER confirm_restock_order AFTER UPDATE ON restock_order 
-FOR EACH ROW 
-BEGIN 
-  IF NEW.status = 'Confirmed' AND OLD.status != 'Confirmed' THEN
-    UPDATE book
-    SET quantity = quantity + NEW.quantity
-    WHERE isbn = NEW.isbn;
-  END IF;
+END IF;
+
 END;
-//
 
+//
 DELIMITER ;

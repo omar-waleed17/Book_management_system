@@ -1,4 +1,3 @@
-// Restore form data from sessionStorage on page load
 window.addEventListener("DOMContentLoaded", () => {
   const savedFormData = sessionStorage.getItem("loginFormData");
   if (savedFormData) {
@@ -20,7 +19,6 @@ document.querySelector(".login-form").addEventListener("input", (e) => {
   sessionStorage.setItem("loginFormData", JSON.stringify(formData));
 });
 
-// Toggle password visibility
 document
   .querySelector(".show-password-btn")
   .addEventListener("click", function () {
@@ -31,7 +29,7 @@ document
     this.classList.toggle("active");
   });
 
-//onlogin submission
+
 document.querySelector(".login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -40,74 +38,47 @@ document.querySelector(".login-form").addEventListener("submit", async (e) => {
     password: e.target.password.value.trim(),
   };
 
-  console.log("Attempting login with:", { username: loginData.username });
-
-  // OPTION 1: Backend API
   try {
+    console.log("🔐 Attempting login...");
+    
     const response = await fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData),
     });
 
-    const data = await response.json();
-    console.log("Backend response:", data);
-
     if (!response.ok) {
-      // 401 means wrong credentials, not server error
-      if (response.status === 401) {
-        alert(data.message || "Invalid username or password");
-        return;
-        1; // Stop here, don't fall back to LocalStorage
-      }
-      throw new Error("Backend server error");
-    }
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Login failed");
+    } 
+    
+    const data = await response.json();
+    console.log("✅ Login successful:", data);
 
-    // Save tokens + metadata from backend response
+    // ✅ Save tokens and user info
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
     localStorage.setItem("username", data.username);
     localStorage.setItem("role", data.role);
     localStorage.setItem("isLoggedIn", "true");
 
-    sessionStorage.removeItem("loginFormData");
 
+
+    // Clear saved form data
+    sessionStorage.removeItem('loginFormData');
     alert("Login successful via backend! Welcome " + data.username);
-    if (localStorage.getItem("role").toLowerCase() === "admin") {
-      window.location.href = "admindashboard.html";
-    } else window.location.href = "customerdashboard.html";
-    return;
+    sessionStorage.removeItem('loginFormData');
+     if (localStorage.getItem("role").toLowerCase() === "admin") {
+      window.location.href = "../Pages/admindashboard.html";
+     }
+
+    // ✅ Check role in UPPERCASE (backend returns "CUSTOMER"/"ADMIN")
+    if (data.role === "CUSTOMER") {
+      window.location.href = "../Pages/customerdashboard.html";
+    } 
+    
   } catch (error) {
-    console.error("Backend error:", error);
-    // Only fall back if backend is completely unavailable (not 401)
-    if (error.message === "Failed to fetch") {
-      console.warn("Backend not available, trying LocalStorage...");
-    } else {
-      return; // Stop if it's any other error
-    }
-  }
-
-  // OPTION 2: LocalStorage fallback (only if backend is down)
-  const savedUser = JSON.parse(localStorage.getItem("signupData") || "null");
-  if (!savedUser) {
-    alert(
-      "Backend unavailable and no local account found. Please try again later."
-    );
-    return;
-  }
-
-  if (
-    loginData.username === savedUser.username &&
-    loginData.password === savedUser.password
-  ) {
-    localStorage.setItem("currentUser", JSON.stringify(savedUser));
-    localStorage.setItem("isLoggedIn", "true");
-    sessionStorage.removeItem("loginFormData");
-
-    alert("Login successful (LocalStorage)! Welcome " + savedUser.username);
-    window.location.href = "customerdashboard.html";
-  } else {
-    alert("Invalid username or password.");
+    console.error("❌ Login failed:", error);
+    alert("Login failed: " + error.message);
   }
 });
-/////will handle login either customer or admin

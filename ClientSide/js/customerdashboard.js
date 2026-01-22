@@ -1,23 +1,26 @@
-// LocalStorage
-
-document.addEventListener("DOMContentLoaded", () => {
-  const customerNameElement = document.getElementById("customerName");
-
-  // Try to get username from backend login (stored separately)
-  let username = localStorage.getItem("username");
-
-  // Fallback to LocalStorage mode (currentUser object)
-  if (!username) {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    if (currentUser && currentUser.username) {
-      username = currentUser.username;
-    }
+// customerdashboard.js - SIMPLE
+document.addEventListener('DOMContentLoaded', function() {
+  // 1. Check if logged in
+  if (!window.TokenManager || !window.TokenManager.isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
   }
-
-  // Display the username
+  
+  // 2. Display username
+  const username = window.TokenManager.getUsername();
+  const welcomeElement = document.getElementById('customerName');
+  
   if (username) {
-    customerNameElement.textContent = `Welcome ${username}`;
+    welcomeElement.textContent = `Welcome, ${username}`;
   } else {
-    customerNameElement.textContent = "Welcome Guest";
+    welcomeElement.textContent = 'Welcome!';
+  }
+  
+  // 3. Setup logout button
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+      window.TokenManager.logout();
+    });
   }
 });

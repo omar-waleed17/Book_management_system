@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Book - Ketaby Book Centre</title>
+  <link rel="icon" type="image/jpeg" href="../images/favicon.png">
+  <link rel="stylesheet" href="../css/modifyBook.css">
+</head>
+<body>
+  <script>
+    // Check authentication before page loads
+    const role = localStorage.getItem("role");
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    
+    if (isLoggedIn !== "true" || role?.toUpperCase() !== "ADMIN") {
+      alert("Access denied. Admin privileges required.");
+      window.location.href = "../index.html";
+    }
+  </script>
+
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <a href="admindashboard.html">🏠 Home</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="createBook.html">📖 Add Books</a>
+    <a href="AdminBooks.html">📚 Search Books</a>
+    <a href="adminAcceptOrders.html">📦 Orders</a>
+    <a href="systemReports.html">📊 Reports</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+  </div>
+
+  <div class="content">
+    <div class="content-box">
+      <h1>Edit Book</h1>
+      <div id="loading" class="loading">Loading book data...</div>
+      <form class="book-form" id="editBookForm" style="display: none;">
+        <input type="text" name="isbn" id="isbn" placeholder="ISBN" readonly />
+        
+        <input type="text" name="bookName" id="bookName" placeholder="Book Name" required />
+        
+        <input type="text" name="author" id="author" placeholder="Author" required />
+        
+        <input type="text" name="publisher" id="publisher" placeholder="Publisher" readonly style="background-color: #f0f0f0; cursor: not-allowed;" />
+        
+        <input type="number" name="price" id="price" placeholder="Price ($)" min="0" step="0.01" required />
+        
+        <div class="current-image" id="currentImageContainer" style="display: none;">
+          <p>Current Image:</p>
+          <img id="currentImage" alt="Current book cover" />
+          <p style="color: #666; font-size: 0.9em; margin-top: 5px;">⚠️ Image updates are not currently supported</p>
+        </div>
+        
+        <select name="genre" id="genre" required>
+          <option value="" disabled>Select Genre</option>
+            <option value="Science">Science</option>
+            <option value="Art">Art</option>
+            <option value="Religion">Religion</option>
+            <option value="History">History</option>
+            <option value="Geography">Geography</option>
+        </select>
+        
+        <input type="number" name="threshold" id="threshold" placeholder="Stock Threshold" min="0" required />
+        
+        <input type="number" name="publicationYear" id="publicationYear" placeholder="Publication Year" min="1890" required />
+        
+        <input type="number" name="quantityInStock" id="quantityInStock" placeholder="Quantity in Stock" min="0" required />
+        
+        <div class="button-group">
+          <button class="book-btn" type="submit">💾 Save Changes</button>
+          <button class="cancel-btn" type="button" onclick="window.history.back()">❌ Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/token.js?v=2"></script>
+  <script src="../js/modifyBook.js?v=2"></script>
+  <script>
+    // Handle logout
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("role");
+      window.location.href = "../index.html";
+    });
+  </script>
+</body>
+</html>
